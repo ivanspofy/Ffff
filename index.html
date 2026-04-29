@@ -455,15 +455,15 @@ function shuffle(arr) {
   return a;
 }
 function generateRoles(playerCount, impostorCount) {
-  // ONE shared brawler and location for ALL peaceful players
-  const sharedBrawler = BRAWLERS[Math.floor(Math.random() * BRAWLERS.length)];
+  // ONE shared brawler for EVERYONE (including impostors)
+  // ONE shared location — but only peaceful players see it
+  const sharedBrawler  = BRAWLERS[Math.floor(Math.random() * BRAWLERS.length)];
   const sharedLocation = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
-  // randomly pick which player indexes are impostors
-  const impostorIdx = new Set(shuffle([...Array(playerCount).keys()]).slice(0, impostorCount));
+  const impostorIdx    = new Set(shuffle([...Array(playerCount).keys()]).slice(0, impostorCount));
   return Array.from({ length: playerCount }, (_, i) => ({
-    brawler: impostorIdx.has(i) ? null : sharedBrawler,
+    brawler:    sharedBrawler,   // same for all
     isImpostor: impostorIdx.has(i),
-    location: sharedLocation,
+    location:   sharedLocation,  // impostors won't see this
   }));
 }
 
