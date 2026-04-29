@@ -95,37 +95,167 @@
     .card-wrap{width:100%;position:relative;border-radius:28px;overflow:hidden;
                touch-action:pan-x;user-select:none;-webkit-user-select:none;}
 
-    .role-card{width:100%;min-height:220px;border-radius:28px;
-               display:flex;flex-direction:column;align-items:center;
-               justify-content:center;gap:10px;padding:24px;text-align:center;}
-    .role-peace{background:linear-gradient(135deg,#1d4ed8,#4338ca,#6d28d9);
-                border:2px solid rgba(34,211,238,.45);}
-    .role-impostor{background:linear-gradient(135deg,#7f1d1d,#9f1239,#450a0a);
-                   border:2px solid rgba(239,68,68,.5);position:relative;overflow:hidden;}
-    .role-impostor::after{content:'';position:absolute;inset:0;border-radius:26px;
-                          background:rgba(239,68,68,.07);
-                          animation:pulse-red 1.6s infinite;pointer-events:none;}
+    /* ══════════════════════════════════════════
+       ROLE CARD — з картинкою персонажа
+    ══════════════════════════════════════════ */
+    .role-card{
+      width:100%;min-height:240px;border-radius:28px;
+      display:flex;flex-direction:column;align-items:center;
+      justify-content:flex-end;gap:0;padding:0;text-align:center;
+      position:relative;overflow:hidden;
+    }
+    /* фон карти */
+    .role-peace{
+      background:linear-gradient(160deg,#0f2a80 0%,#1d4ed8 40%,#4338ca 70%,#6d28d9 100%);
+      border:2px solid rgba(34,211,238,.45);
+    }
+    .role-impostor{
+      background:linear-gradient(160deg,#1a0000 0%,#7f1d1d 40%,#9f1239 70%,#450a0a 100%);
+      border:2px solid rgba(239,68,68,.5);
+      position:relative;overflow:hidden;
+    }
+    .role-impostor::after{
+      content:'';position:absolute;inset:0;border-radius:26px;
+      background:rgba(239,68,68,.07);
+      animation:pulse-red 1.6s infinite;pointer-events:none;z-index:0;
+    }
     @keyframes pulse-red{0%,100%{opacity:0}50%{opacity:1}}
 
-    .role-emoji{font-size:62px;line-height:1;}
-    .role-name{font-family:var(--ftitle);font-size:30px;letter-spacing:1px;color:#fff;}
-    .role-loc{display:flex;align-items:center;gap:6px;
-              background:rgba(255,255,255,.15);border-radius:12px;
-              padding:6px 14px;font-size:13px;font-weight:800;color:#cffafe;}
-    .role-badge{background:rgba(16,185,129,.25);border:1px solid rgba(52,211,153,.4);
-                border-radius:12px;padding:4px 14px;
-                font-size:11px;font-weight:900;color:#6ee7b7;
-                letter-spacing:2px;text-transform:uppercase;}
-    .imp-title{font-family:var(--ftitle);font-size:34px;letter-spacing:2px;
-               color:#fca5a5;text-transform:uppercase;
-               animation:shake 1.1s ease-in-out infinite;position:relative;z-index:1;}
-    @keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
-    .imp-sub{font-size:13px;color:rgba(252,165,165,.75);font-weight:700;position:relative;z-index:1;}
-    .imp-badge{background:rgba(239,68,68,.3);border:1px solid rgba(248,113,113,.4);
-               border-radius:12px;padding:4px 14px;
-               font-size:11px;font-weight:900;color:#fca5a5;
-               letter-spacing:2px;text-transform:uppercase;position:relative;z-index:1;}
+    /* ── зображення персонажа ── */
+    .char-img-wrap{
+      position:relative;width:100%;flex:1;display:flex;align-items:center;justify-content:center;
+      min-height:150px;padding-top:16px;z-index:1;
+    }
+    .char-img-container{
+      position:relative;
+      width:130px;height:130px;
+      flex-shrink:0;
+    }
+    /* Золота рамка для мирних */
+    .char-frame-peace{
+      position:absolute;inset:-4px;
+      border-radius:50%;
+      background:conic-gradient(
+        #fbbf24 0deg, #f59e0b 60deg, #fde68a 120deg,
+        #f59e0b 180deg, #fbbf24 240deg, #fde68a 300deg, #fbbf24 360deg
+      );
+      animation:spin-frame 6s linear infinite;
+      z-index:0;
+    }
+    /* Червона рамка для імпостерів */
+    .char-frame-imp{
+      position:absolute;inset:-4px;
+      border-radius:50%;
+      background:conic-gradient(
+        #ef4444 0deg, #dc2626 60deg, #fca5a5 120deg,
+        #ef4444 180deg, #b91c1c 240deg, #fca5a5 300deg, #ef4444 360deg
+      );
+      animation:spin-frame 3s linear infinite;
+      z-index:0;
+    }
+    @keyframes spin-frame{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 
+    .char-img-bg{
+      position:absolute;inset:3px;
+      border-radius:50%;
+      z-index:1;
+    }
+    .char-img-bg-peace{ background:linear-gradient(135deg,#1e1b4b,#2d1b69); }
+    .char-img-bg-imp{ background:linear-gradient(135deg,#1a0000,#450a0a); }
+
+    .char-img{
+      position:absolute;inset:3px;
+      border-radius:50%;overflow:hidden;
+      z-index:2;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .char-img img{
+      width:120%;height:120%;
+      object-fit:cover;
+      object-position:center top;
+      display:block;
+      transform:scale(1.05) translateY(-3%);
+      transition:opacity .3s;
+    }
+    .char-img img.loading{ opacity:0; }
+    .char-img img.loaded{ opacity:1; }
+    .char-fallback{
+      font-size:56px;line-height:1;
+      display:flex;align-items:center;justify-content:center;
+      width:100%;height:100%;
+    }
+
+    /* Зовнішнє мерехтіння навколо рамки */
+    .char-glow-peace{
+      position:absolute;inset:-12px;
+      border-radius:50%;
+      background:radial-gradient(circle,rgba(251,191,36,.35) 0%,transparent 70%);
+      z-index:-1;
+      animation:glow-pulse 2s ease-in-out infinite;
+    }
+    .char-glow-imp{
+      position:absolute;inset:-12px;
+      border-radius:50%;
+      background:radial-gradient(circle,rgba(239,68,68,.3) 0%,transparent 70%);
+      z-index:-1;
+      animation:glow-pulse 1.3s ease-in-out infinite;
+    }
+    @keyframes glow-pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+
+    /* зірочки навколо для мирних */
+    .char-stars{
+      position:absolute;inset:-20px;
+      border-radius:50%;
+      pointer-events:none;
+      z-index:0;
+    }
+    .char-star{
+      position:absolute;
+      width:5px;height:5px;
+      border-radius:50%;
+      background:var(--yellow);
+      box-shadow:0 0 6px var(--yellow);
+    }
+
+    /* ── нижня частина карти ── */
+    .card-bottom{
+      width:100%;
+      padding:14px 18px 18px;
+      background:linear-gradient(to top, rgba(0,0,0,.6) 0%, transparent 100%);
+      display:flex;flex-direction:column;align-items:center;gap:8px;
+      z-index:2;position:relative;
+    }
+    .role-name{font-family:var(--ftitle);font-size:26px;letter-spacing:1px;color:#fff;
+               text-shadow:0 2px 12px rgba(0,0,0,.8);}
+    .role-loc{
+      display:flex;align-items:center;gap:6px;
+      background:rgba(0,0,0,.35);backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.15);
+      border-radius:12px;padding:5px 14px;
+      font-size:13px;font-weight:800;color:#cffafe;
+    }
+    .role-badge{
+      background:rgba(16,185,129,.3);border:1px solid rgba(52,211,153,.5);
+      border-radius:10px;padding:4px 14px;
+      font-size:11px;font-weight:900;color:#6ee7b7;
+      letter-spacing:2px;text-transform:uppercase;
+    }
+    .imp-title{
+      font-family:var(--ftitle);font-size:32px;letter-spacing:2px;
+      color:#fca5a5;text-transform:uppercase;
+      animation:shake 1.1s ease-in-out infinite;position:relative;z-index:1;
+      text-shadow:0 0 20px rgba(239,68,68,.6);
+    }
+    @keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+    .imp-sub{font-size:13px;color:rgba(252,165,165,.8);font-weight:700;position:relative;z-index:1;}
+    .imp-badge{
+      background:rgba(239,68,68,.35);border:1px solid rgba(248,113,113,.5);
+      border-radius:10px;padding:4px 14px;
+      font-size:11px;font-weight:900;color:#fca5a5;
+      letter-spacing:2px;text-transform:uppercase;position:relative;z-index:1;
+    }
+
+    /* ── COVER ── */
     .cover{position:absolute;inset:0;z-index:2;
            border-radius:28px;
            background:linear-gradient(135deg,#3730a3,#581c87);
@@ -174,7 +304,7 @@
                 text-shadow:0 2px 20px rgba(250,204,21,.5);}
     .done-sub{color:#c4b5fd;font-size:15px;font-weight:700;text-align:center;margin-top:6px;}
 
-    /* ── RESULTS SCREEN ── */
+    /* ── RESULTS ── */
     .results-header{text-align:center;}
     .results-title{font-family:var(--ftitle);font-size:36px;letter-spacing:2px;color:var(--yellow);
                    text-shadow:0 2px 20px rgba(250,204,21,.5);}
@@ -188,14 +318,23 @@
 
     .result-row{display:flex;align-items:center;gap:12px;
                 background:rgba(255,255,255,.08);border-radius:16px;
-                padding:12px 14px;border:1px solid rgba(255,255,255,.12);
+                padding:10px 14px;border:1px solid rgba(255,255,255,.12);
                 animation:slide-in .35s cubic-bezier(.16,1,.3,1) both;
                 animation-delay:var(--rd,0s);}
     @keyframes slide-in{from{transform:translateX(-20px);opacity:0}to{transform:translateX(0);opacity:1}}
-
     .result-row.is-imp{background:rgba(239,68,68,.15);border-color:rgba(248,113,113,.35);}
     .result-num{font-family:var(--ftitle);font-size:22px;color:rgba(255,255,255,.35);min-width:28px;}
-    .result-emoji{font-size:28px;line-height:1;}
+
+    /* ── thumbnail у результатах ── */
+    .result-thumb{
+      width:44px;height:44px;border-radius:50%;overflow:hidden;
+      flex-shrink:0;border:2px solid rgba(255,255,255,.2);
+      background:rgba(255,255,255,.08);
+      display:flex;align-items:center;justify-content:center;
+      font-size:22px;position:relative;
+    }
+    .result-thumb.imp-thumb{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.15);}
+    .result-thumb img{width:130%;height:130%;object-fit:cover;object-position:center top;transform:translateY(-5%);}
     .result-info{flex:1;}
     .result-brawler{font-weight:900;font-size:14px;color:#fff;}
     .result-loc{font-size:11px;color:#a78bfa;font-weight:700;margin-top:1px;}
@@ -207,7 +346,13 @@
     .results-info-card{width:100%;background:rgba(255,255,255,.07);border-radius:18px;
                        border:1px solid rgba(255,255,255,.14);padding:14px 18px;
                        display:flex;align-items:center;gap:14px;}
-    .ric-emoji{font-size:32px;}
+    .ric-thumb{
+      width:56px;height:56px;border-radius:50%;overflow:hidden;flex-shrink:0;
+      border:2px solid rgba(251,191,36,.5);
+      background:rgba(255,255,255,.08);
+      display:flex;align-items:center;justify-content:center;font-size:28px;
+    }
+    .ric-thumb img{width:130%;height:130%;object-fit:cover;object-position:center top;transform:translateY(-5%);}
     .ric-text{font-size:12px;color:#c4b5fd;font-weight:700;line-height:1.5;}
     .ric-brawler{font-family:var(--ftitle);font-size:20px;color:#fff;letter-spacing:1px;}
     .ric-loc{color:var(--cyan);font-weight:800;}
@@ -239,7 +384,6 @@
       <p class="subtitle" id="mode-subtitle">Brawl Stars Edition</p>
     </div>
 
-    <!-- ВИБІР ГРИ -->
     <div class="picker-wrap">
       <button class="picker-btn active" id="pick-bs" onclick="selectMode('bs')">
         <span class="picker-icon">⭐</span>
@@ -299,7 +443,7 @@
     <button class="btn-ghost" id="btn-cancel">↩ Скасувати гру</button>
   </div>
 
-  <!-- DONE (перехідний) -->
+  <!-- DONE -->
   <div class="screen hidden" id="screen-done">
     <span class="done-emoji">🎮</span>
     <div>
@@ -316,11 +460,8 @@
       <div class="results-title">🔍 РЕЗУЛЬТАТИ</div>
       <div class="results-sub">Хто був імпостером?</div>
     </div>
-
     <div class="results-info-card" id="results-info-card"></div>
-
     <div class="results-scroll" id="results-list"></div>
-
     <div class="btn-row">
       <button class="btn-half primary" id="btn-results-new">⚡ НОВА ГРА</button>
       <button class="btn-half secondary" id="btn-results-same">🔄 ТА САМА</button>
@@ -331,96 +472,180 @@
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-// ДАНІ
+// CDN HELPER
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Brawl Stars: brawlify.com CDN — формат назви без пробілів
+// https://cdn.brawlify.com/brawler-bs/{Name}.png  (великі букви, без пробілів)
+function bsImgUrl(name) {
+  // Нормалізуємо: видаляємо крапки, коми, апострофи; замінюємо пробіли на '-'
+  const slug = name
+    .replace(/['.]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/ь/g, '')   // транслітерація не потрібна — назви вже EN у slug
+    ;
+  // Для EN назв — використовуємо їх безпосередньо
+  return null; // буде перевизначено нижче через окреме поле
+}
+
+// Clash Royale: RoyaleAPI assets
+// https://royaleapi.github.io/cr-api-assets/cards-150/{slug}.png
+function crImgUrl(slug) {
+  return `https://royaleapi.github.io/cr-api-assets/cards-150/${slug}.png`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ДАНІ — Brawl Stars (додаємо slug для CDN)
 // ═══════════════════════════════════════════════════════════════════════════
 
 const BRAWLERS = [
-  {name:"8-BIT",        emoji:"👾"},{name:"R-T",            emoji:"🤖"},
-  {name:"Амбер",        emoji:"🔥"},{name:"Анджело",        emoji:"🏹"},
-  {name:"Базз",         emoji:"🐝"},{name:"Байрон",         emoji:"💊"},
-  {name:"Барлі",        emoji:"🍺"},{name:"Белль",          emoji:"🎯"},
-  {name:"Бібі",         emoji:"🏏"},{name:"Бонні",          emoji:"🎠"},
-  {name:"Брок",         emoji:"🚀"},{name:"Булл",           emoji:"🐂"},
-  {name:"Бастер",       emoji:"🛡️"},{name:"Беа",            emoji:"🐝"},
-  {name:"Бо",           emoji:"🏹"},{name:"Вольт",          emoji:"⚡"},
-  {name:"Гас",          emoji:"👻"},{name:"Грей",           emoji:"🚪"},
-  {name:"Гром",         emoji:"💥"},{name:"Джанет",         emoji:"🎤"},
-  {name:"Джессі",       emoji:"⚡"},{name:"Джин",           emoji:"🧞"},
-  {name:"Джекі",        emoji:"🔩"},{name:"Дерріл",         emoji:"🛢️"},
-  {name:"Динамайк",     emoji:"💣"},{name:"Дуг",            emoji:"🌭"},
-  {name:"Едгар",        emoji:"🖤"},{name:"Ель Прімо",      emoji:"🥊"},
-  {name:"Емз",          emoji:"💀"},{name:"Еш",             emoji:"🔥"},
-  {name:"Колетт",       emoji:"💰"},{name:"Кольт",          emoji:"🤠"},
-  {name:"Корделіус",    emoji:"🍄"},{name:"Кроу",           emoji:"🐦"},
-  {name:"Ларрі і Лорі", emoji:"🔧"},{name:"Леон",           emoji:"🐱"},
-  {name:"Лола",         emoji:"🌟"},{name:"Лу",             emoji:"🧊"},
-  {name:"Макс",         emoji:"👟"},{name:"Мейсі",          emoji:"🎯"},
-  {name:"Менді",        emoji:"🌸"},{name:"Меґ",            emoji:"🤖"},
-  {name:"Мортіс",       emoji:"⚰️"},{name:"Містер П.",      emoji:"🎩"},
-  {name:"Нані",         emoji:"🤖"},{name:"Ніта",           emoji:"🐻"},
-  {name:"Отіс",         emoji:"🎨"},{name:"Пайпер",         emoji:"☂️"},
-  {name:"Пенні",        emoji:"🏴‍☠️"},{name:"Перл",           emoji:"🦞"},
-  {name:"Поко",         emoji:"🎸"},{name:"Пем",            emoji:"🔧"},
-  {name:"Ріко",         emoji:"🎳"},{name:"Роза",           emoji:"🌹"},
-  {name:"Руфс",         emoji:"⭐"},{name:"Сквік",          emoji:"🧪"},
-  {name:"Спайк",        emoji:"🌵"},{name:"Спраут",         emoji:"🌱"},
-  {name:"Сту",          emoji:"🛹"},{name:"Сем",            emoji:"🥊"},
-  {name:"Сенді",        emoji:"🏜️"},{name:"Тара",           emoji:"🃏"},
-  {name:"Тік",          emoji:"⏰"},{name:"Френк",          emoji:"🔨"},
-  {name:"Фанг",         emoji:"🦷"},{name:"Хенк",           emoji:"🐋"},
-  {name:"Чак",          emoji:"⚡"},{name:"Чарлі",          emoji:"🕷️"},
-  {name:"Честер",       emoji:"🎪"},{name:"Шеллі",          emoji:"🔫"},
+  {name:"8-BIT",        emoji:"👾", img:"https://cdn.brawlify.com/brawler-bs/8-Bit.png"},
+  {name:"R-T",          emoji:"🤖", img:"https://cdn.brawlify.com/brawler-bs/R-T.png"},
+  {name:"Амбер",        emoji:"🔥", img:"https://cdn.brawlify.com/brawler-bs/Amber.png"},
+  {name:"Анджело",      emoji:"🏹", img:"https://cdn.brawlify.com/brawler-bs/Angelo.png"},
+  {name:"Базз",         emoji:"🐝", img:"https://cdn.brawlify.com/brawler-bs/Buzz.png"},
+  {name:"Байрон",       emoji:"💊", img:"https://cdn.brawlify.com/brawler-bs/Byron.png"},
+  {name:"Барлі",        emoji:"🍺", img:"https://cdn.brawlify.com/brawler-bs/Barley.png"},
+  {name:"Белль",        emoji:"🎯", img:"https://cdn.brawlify.com/brawler-bs/Belle.png"},
+  {name:"Бібі",         emoji:"🏏", img:"https://cdn.brawlify.com/brawler-bs/Bibi.png"},
+  {name:"Бонні",        emoji:"🎠", img:"https://cdn.brawlify.com/brawler-bs/Bonnie.png"},
+  {name:"Брок",         emoji:"🚀", img:"https://cdn.brawlify.com/brawler-bs/Brock.png"},
+  {name:"Булл",         emoji:"🐂", img:"https://cdn.brawlify.com/brawler-bs/Bull.png"},
+  {name:"Бастер",       emoji:"🛡️", img:"https://cdn.brawlify.com/brawler-bs/Buster.png"},
+  {name:"Беа",          emoji:"🐝", img:"https://cdn.brawlify.com/brawler-bs/Bea.png"},
+  {name:"Бо",           emoji:"🏹", img:"https://cdn.brawlify.com/brawler-bs/Bo.png"},
+  {name:"Вольт",        emoji:"⚡", img:"https://cdn.brawlify.com/brawler-bs/Volt.png"},
+  {name:"Гас",          emoji:"👻", img:"https://cdn.brawlify.com/brawler-bs/Gus.png"},
+  {name:"Грей",         emoji:"🚪", img:"https://cdn.brawlify.com/brawler-bs/Gray.png"},
+  {name:"Гром",         emoji:"💥", img:"https://cdn.brawlify.com/brawler-bs/Griff.png"},
+  {name:"Джанет",       emoji:"🎤", img:"https://cdn.brawlify.com/brawler-bs/Janet.png"},
+  {name:"Джессі",       emoji:"⚡", img:"https://cdn.brawlify.com/brawler-bs/Jessie.png"},
+  {name:"Джин",         emoji:"🧞", img:"https://cdn.brawlify.com/brawler-bs/Gene.png"},
+  {name:"Джекі",        emoji:"🔩", img:"https://cdn.brawlify.com/brawler-bs/Jacky.png"},
+  {name:"Дерріл",       emoji:"🛢️", img:"https://cdn.brawlify.com/brawler-bs/Darryl.png"},
+  {name:"Динамайк",     emoji:"💣", img:"https://cdn.brawlify.com/brawler-bs/Dynamike.png"},
+  {name:"Дуг",          emoji:"🌭", img:"https://cdn.brawlify.com/brawler-bs/Doug.png"},
+  {name:"Едгар",        emoji:"🖤", img:"https://cdn.brawlify.com/brawler-bs/Edgar.png"},
+  {name:"Ель Прімо",    emoji:"🥊", img:"https://cdn.brawlify.com/brawler-bs/El-Primo.png"},
+  {name:"Емз",          emoji:"💀", img:"https://cdn.brawlify.com/brawler-bs/Emz.png"},
+  {name:"Еш",           emoji:"🔥", img:"https://cdn.brawlify.com/brawler-bs/Ash.png"},
+  {name:"Колетт",       emoji:"💰", img:"https://cdn.brawlify.com/brawler-bs/Colette.png"},
+  {name:"Кольт",        emoji:"🤠", img:"https://cdn.brawlify.com/brawler-bs/Colt.png"},
+  {name:"Корделіус",    emoji:"🍄", img:"https://cdn.brawlify.com/brawler-bs/Cordelius.png"},
+  {name:"Кроу",         emoji:"🐦", img:"https://cdn.brawlify.com/brawler-bs/Crow.png"},
+  {name:"Ларрі і Лорі", emoji:"🔧", img:"https://cdn.brawlify.com/brawler-bs/Larry-and-Lawrie.png"},
+  {name:"Леон",         emoji:"🐱", img:"https://cdn.brawlify.com/brawler-bs/Leon.png"},
+  {name:"Лола",         emoji:"🌟", img:"https://cdn.brawlify.com/brawler-bs/Lola.png"},
+  {name:"Лу",           emoji:"🧊", img:"https://cdn.brawlify.com/brawler-bs/Lou.png"},
+  {name:"Макс",         emoji:"👟", img:"https://cdn.brawlify.com/brawler-bs/Max.png"},
+  {name:"Мейсі",        emoji:"🎯", img:"https://cdn.brawlify.com/brawler-bs/Maisie.png"},
+  {name:"Менді",        emoji:"🌸", img:"https://cdn.brawlify.com/brawler-bs/Mandy.png"},
+  {name:"Меґ",          emoji:"🤖", img:"https://cdn.brawlify.com/brawler-bs/Meg.png"},
+  {name:"Мортіс",       emoji:"⚰️", img:"https://cdn.brawlify.com/brawler-bs/Mortis.png"},
+  {name:"Містер П.",    emoji:"🎩", img:"https://cdn.brawlify.com/brawler-bs/Mr-P.png"},
+  {name:"Нані",         emoji:"🤖", img:"https://cdn.brawlify.com/brawler-bs/Nani.png"},
+  {name:"Ніта",         emoji:"🐻", img:"https://cdn.brawlify.com/brawler-bs/Nita.png"},
+  {name:"Отіс",         emoji:"🎨", img:"https://cdn.brawlify.com/brawler-bs/Otis.png"},
+  {name:"Пайпер",       emoji:"☂️", img:"https://cdn.brawlify.com/brawler-bs/Piper.png"},
+  {name:"Пенні",        emoji:"🏴‍☠️", img:"https://cdn.brawlify.com/brawler-bs/Penny.png"},
+  {name:"Перл",         emoji:"🦞", img:"https://cdn.brawlify.com/brawler-bs/Pearl.png"},
+  {name:"Поко",         emoji:"🎸", img:"https://cdn.brawlify.com/brawler-bs/Poco.png"},
+  {name:"Пем",          emoji:"🔧", img:"https://cdn.brawlify.com/brawler-bs/Pam.png"},
+  {name:"Ріко",         emoji:"🎳", img:"https://cdn.brawlify.com/brawler-bs/Rico.png"},
+  {name:"Роза",         emoji:"🌹", img:"https://cdn.brawlify.com/brawler-bs/Rosa.png"},
+  {name:"Руфс",         emoji:"⭐", img:"https://cdn.brawlify.com/brawler-bs/Ruffs.png"},
+  {name:"Сквік",        emoji:"🧪", img:"https://cdn.brawlify.com/brawler-bs/Squeak.png"},
+  {name:"Спайк",        emoji:"🌵", img:"https://cdn.brawlify.com/brawler-bs/Spike.png"},
+  {name:"Спраут",       emoji:"🌱", img:"https://cdn.brawlify.com/brawler-bs/Sprout.png"},
+  {name:"Сту",          emoji:"🛹", img:"https://cdn.brawlify.com/brawler-bs/Stu.png"},
+  {name:"Сем",          emoji:"🥊", img:"https://cdn.brawlify.com/brawler-bs/Sam.png"},
+  {name:"Сенді",        emoji:"🏜️", img:"https://cdn.brawlify.com/brawler-bs/Sandy.png"},
+  {name:"Тара",         emoji:"🃏", img:"https://cdn.brawlify.com/brawler-bs/Tara.png"},
+  {name:"Тік",          emoji:"⏰", img:"https://cdn.brawlify.com/brawler-bs/Tick.png"},
+  {name:"Френк",        emoji:"🔨", img:"https://cdn.brawlify.com/brawler-bs/Frank.png"},
+  {name:"Фанг",         emoji:"🦷", img:"https://cdn.brawlify.com/brawler-bs/Fang.png"},
+  {name:"Хенк",         emoji:"🐋", img:"https://cdn.brawlify.com/brawler-bs/Hank.png"},
+  {name:"Чак",          emoji:"⚡", img:"https://cdn.brawlify.com/brawler-bs/Chuck.png"},
+  {name:"Чарлі",        emoji:"🕷️", img:"https://cdn.brawlify.com/brawler-bs/Charlie.png"},
+  {name:"Честер",       emoji:"🎪", img:"https://cdn.brawlify.com/brawler-bs/Chester.png"},
+  {name:"Шеллі",        emoji:"🔫", img:"https://cdn.brawlify.com/brawler-bs/Shelly.png"},
 ];
 
+// ═══════════════════════════════════════════════════════════════════════════
+// ДАНІ — Clash Royale
+// ═══════════════════════════════════════════════════════════════════════════
+
 const CR_CHARS = [
-  {name:"Адська гончая",        emoji:"🐕"},{name:"Армія скелетів",       emoji:"💀"},
-  {name:"Банда гоблінів",       emoji:"👺"},{name:"Бандитка",             emoji:"🗡️"},
-  {name:"Берсеркша",            emoji:"⚔️"},{name:"Бойовий таран",        emoji:"🪵"},
-  {name:"Бочка зі скелетами",   emoji:"🪣"},{name:"Валькірія",            emoji:"🛡️"},
-  {name:"Варвари",              emoji:"🪓"},{name:"Відьма",               emoji:"🧙"},
-  {name:"Відьмина бабуся",      emoji:"👵"},{name:"Вершник на кабані",    emoji:"🐗"},
-  {name:"Вершниця на барані",   emoji:"🐏"},{name:"Вишибала",             emoji:"🏏"},
-  {name:"Гігант",               emoji:"🗿"},{name:"Гігантський скелет",   emoji:"☠️"},
-  {name:"Головна бандитка",     emoji:"👸"},{name:"Гоблін з дротиками",   emoji:"🎯"},
-  {name:"Гоблін-гігант",        emoji:"👹"},{name:"Гоблін-підривник",     emoji:"💣"},
-  {name:"Гоблінштейн",          emoji:"⚡"},{name:"Гобліни",              emoji:"👺"},
-  {name:"Гобліни-списники",     emoji:"🔱"},{name:"Голем",                emoji:"🪨"},
-  {name:"Громовержець",         emoji:"⚡"},{name:"Дракончик",            emoji:"🐲"},
-  {name:"Дровосек",             emoji:"🪚"},{name:"Дух зцілення",         emoji:"💚"},
-  {name:"Золотий лицар",        emoji:"🏅"},{name:"Імператриця духів",    emoji:"👻"},
-  {name:"Чарівник",             emoji:"🧙"},{name:"Королева лучниць",     emoji:"🏹"},
-  {name:"Королівські кабани",   emoji:"🐗"},{name:"Королівські рекрути",  emoji:"⚔️"},
-  {name:"Королівський гігант",  emoji:"👑"},{name:"Королівський привид",  emoji:"👻"},
-  {name:"Король скелетів",      emoji:"💀"},{name:"Кісткові дракони",     emoji:"🦴"},
-  {name:"Льодовий голем",       emoji:"🧊"},{name:"Льодовий дух",         emoji:"❄️"},
-  {name:"Льодовий чарівник",    emoji:"🧊"},{name:"Льодовий супер-голем", emoji:"🧊"},
-  {name:"Кажани",               emoji:"🦇"},{name:"Летючка",              emoji:"🦇"},
-  {name:"Лучниці",              emoji:"🏹"},{name:"Магічний лучник",      emoji:"✨"},
-  {name:"Маленький Принц",      emoji:"🤴"},{name:"Мегамініон",           emoji:"😈"},
-  {name:"Мегалицар",            emoji:"⚔️"},{name:"Міні-генератори",      emoji:"⚡"},
-  {name:"Міні-П.Е.К.К.А.",      emoji:"🤖"},{name:"Міньони",              emoji:"😈"},
-  {name:"Монах",                emoji:"🥋"},{name:"Мушкетер",             emoji:"🔫"},
-  {name:"Нічна відьма",         emoji:"🌙"},{name:"Вогняна лучниця",      emoji:"🔥"},
-  {name:"Вогняний дух",         emoji:"🔥"},{name:"Орда міньонів",        emoji:"😈"},
-  {name:"Мисливець",            emoji:"🎯"},{name:"П.Е.К.К.А.",           emoji:"🤖"},
-  {name:"Кат",                  emoji:"⚔️"},{name:"Піч",                  emoji:"🔥"},
-  {name:"Полум'яний дракон",    emoji:"🔥"},{name:"Гарматна повозка",     emoji:"💥"},
-  {name:"Підозрілий кущ",       emoji:"🌿"},{name:"Підривник",            emoji:"💣"},
-  {name:"Принц",                emoji:"🤴"},{name:"Принцеса",             emoji:"👸"},
-  {name:"Розбійники",           emoji:"🗡️"},{name:"Рунічна гігантша",     emoji:"🪨"},
-  {name:"Рибалка",              emoji:"🎣"},{name:"Лицар",                emoji:"⚔️"},
-  {name:"Санта на кабані",      emoji:"🎅"},{name:"Скелети",              emoji:"💀"},
-  {name:"Спаркі",               emoji:"⚡"},{name:"Стінобої",             emoji:"🪨"},
-  {name:"Варта",                emoji:"🛡️"},{name:"Супер-адська гончая",  emoji:"🐕"},
-  {name:"Супервідьма",          emoji:"🧙"},{name:"Супер-маг. лучник",    emoji:"✨"},
-  {name:"Супер-міні-П.Е.К.К.А.",emoji:"🤖"},{name:"Темний принц",        emoji:"🖤"},
-  {name:"Террі",                emoji:"🎭"},{name:"Тесла",                emoji:"⚡"},
-  {name:"Три мушкетери",        emoji:"🔫"},{name:"Тріо чарівників",      emoji:"🧙"},
-  {name:"Фенікс",               emoji:"🦅"},{name:"Цілителька-воїн",      emoji:"💚"},
-  {name:"Куля",                 emoji:"💣"},{name:"Шахтар",               emoji:"⛏️"},
-  {name:"Шустрий шахтар",       emoji:"⛏️"},{name:"Електричний дух",      emoji:"⚡"},
-  {name:"Електрогігант",        emoji:"⚡"},{name:"Електродракон",        emoji:"🐲"},
-  {name:"Еліксирний голем",     emoji:"🧪"},{name:"Елітні варвари",       emoji:"🪓"},
+  {name:"Адська гончея",        emoji:"🐕", img:"https://royaleapi.github.io/cr-api-assets/cards-150/inferno-dragon.png"},
+  {name:"Армія скелетів",       emoji:"💀", img:"https://royaleapi.github.io/cr-api-assets/cards-150/skeleton-army.png"},
+  {name:"Банда гоблінів",       emoji:"👺", img:"https://royaleapi.github.io/cr-api-assets/cards-150/goblin-gang.png"},
+  {name:"Бандитка",             emoji:"🗡️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/bandit.png"},
+  {name:"Берсеркша",            emoji:"⚔️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/valkyrie.png"},
+  {name:"Бойовий таран",        emoji:"🪵", img:"https://royaleapi.github.io/cr-api-assets/cards-150/battle-ram.png"},
+  {name:"Варвари",              emoji:"🪓", img:"https://royaleapi.github.io/cr-api-assets/cards-150/barbarians.png"},
+  {name:"Відьма",               emoji:"🧙", img:"https://royaleapi.github.io/cr-api-assets/cards-150/witch.png"},
+  {name:"Вершник на кабані",    emoji:"🐗", img:"https://royaleapi.github.io/cr-api-assets/cards-150/hog-rider.png"},
+  {name:"Вершниця на барані",   emoji:"🐏", img:"https://royaleapi.github.io/cr-api-assets/cards-150/ram-rider.png"},
+  {name:"Вишибала",             emoji:"🏏", img:"https://royaleapi.github.io/cr-api-assets/cards-150/bowler.png"},
+  {name:"Гігант",               emoji:"🗿", img:"https://royaleapi.github.io/cr-api-assets/cards-150/giant.png"},
+  {name:"Гігантський скелет",   emoji:"☠️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/giant-skeleton.png"},
+  {name:"Гоблін з дротиками",   emoji:"🎯", img:"https://royaleapi.github.io/cr-api-assets/cards-150/dart-goblin.png"},
+  {name:"Гоблін-гігант",        emoji:"👹", img:"https://royaleapi.github.io/cr-api-assets/cards-150/goblin-giant.png"},
+  {name:"Гобліни",              emoji:"👺", img:"https://royaleapi.github.io/cr-api-assets/cards-150/goblins.png"},
+  {name:"Гобліни-списники",     emoji:"🔱", img:"https://royaleapi.github.io/cr-api-assets/cards-150/spear-goblins.png"},
+  {name:"Голем",                emoji:"🪨", img:"https://royaleapi.github.io/cr-api-assets/cards-150/golem.png"},
+  {name:"Громовержець",         emoji:"⚡", img:"https://royaleapi.github.io/cr-api-assets/cards-150/electro-wizard.png"},
+  {name:"Дракончик",            emoji:"🐲", img:"https://royaleapi.github.io/cr-api-assets/cards-150/baby-dragon.png"},
+  {name:"Дровосек",             emoji:"🪚", img:"https://royaleapi.github.io/cr-api-assets/cards-150/lumberjack.png"},
+  {name:"Дух зцілення",         emoji:"💚", img:"https://royaleapi.github.io/cr-api-assets/cards-150/heal-spirit.png"},
+  {name:"Золотий лицар",        emoji:"🏅", img:"https://royaleapi.github.io/cr-api-assets/cards-150/golden-knight.png"},
+  {name:"Чарівник",             emoji:"🧙", img:"https://royaleapi.github.io/cr-api-assets/cards-150/wizard.png"},
+  {name:"Королева лучниць",     emoji:"🏹", img:"https://royaleapi.github.io/cr-api-assets/cards-150/archer-queen.png"},
+  {name:"Королівські кабани",   emoji:"🐗", img:"https://royaleapi.github.io/cr-api-assets/cards-150/royal-hogs.png"},
+  {name:"Королівський гігант",  emoji:"👑", img:"https://royaleapi.github.io/cr-api-assets/cards-150/royal-giant.png"},
+  {name:"Королівський привид",  emoji:"👻", img:"https://royaleapi.github.io/cr-api-assets/cards-150/royal-ghost.png"},
+  {name:"Король скелетів",      emoji:"💀", img:"https://royaleapi.github.io/cr-api-assets/cards-150/skeleton-king.png"},
+  {name:"Льодовий голем",       emoji:"🧊", img:"https://royaleapi.github.io/cr-api-assets/cards-150/ice-golem.png"},
+  {name:"Льодовий дух",         emoji:"❄️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/ice-spirit.png"},
+  {name:"Льодовий чарівник",    emoji:"🧊", img:"https://royaleapi.github.io/cr-api-assets/cards-150/ice-wizard.png"},
+  {name:"Кажани",               emoji:"🦇", img:"https://royaleapi.github.io/cr-api-assets/cards-150/bats.png"},
+  {name:"Лучниці",              emoji:"🏹", img:"https://royaleapi.github.io/cr-api-assets/cards-150/archers.png"},
+  {name:"Магічний лучник",      emoji:"✨", img:"https://royaleapi.github.io/cr-api-assets/cards-150/magic-archer.png"},
+  {name:"Маленький Принц",      emoji:"🤴", img:"https://royaleapi.github.io/cr-api-assets/cards-150/little-prince.png"},
+  {name:"Мегамініон",           emoji:"😈", img:"https://royaleapi.github.io/cr-api-assets/cards-150/mega-minion.png"},
+  {name:"Мегалицар",            emoji:"⚔️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/mega-knight.png"},
+  {name:"Спаркі",               emoji:"⚡", img:"https://royaleapi.github.io/cr-api-assets/cards-150/sparky.png"},
+  {name:"Міні-П.Е.К.К.А.",      emoji:"🤖", img:"https://royaleapi.github.io/cr-api-assets/cards-150/mini-pekka.png"},
+  {name:"Міньони",              emoji:"😈", img:"https://royaleapi.github.io/cr-api-assets/cards-150/minions.png"},
+  {name:"Монах",                emoji:"🥋", img:"https://royaleapi.github.io/cr-api-assets/cards-150/monk.png"},
+  {name:"Мушкетер",             emoji:"🔫", img:"https://royaleapi.github.io/cr-api-assets/cards-150/musketeer.png"},
+  {name:"Нічна відьма",         emoji:"🌙", img:"https://royaleapi.github.io/cr-api-assets/cards-150/night-witch.png"},
+  {name:"Вогняний дух",         emoji:"🔥", img:"https://royaleapi.github.io/cr-api-assets/cards-150/fire-spirit.png"},
+  {name:"Орда міньонів",        emoji:"😈", img:"https://royaleapi.github.io/cr-api-assets/cards-150/minion-horde.png"},
+  {name:"Мисливець",            emoji:"🎯", img:"https://royaleapi.github.io/cr-api-assets/cards-150/hunter.png"},
+  {name:"П.Е.К.К.А.",           emoji:"🤖", img:"https://royaleapi.github.io/cr-api-assets/cards-150/pekka.png"},
+  {name:"Кат",                  emoji:"⚔️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/executioner.png"},
+  {name:"Полум'яний дракон",    emoji:"🔥", img:"https://royaleapi.github.io/cr-api-assets/cards-150/inferno-dragon.png"},
+  {name:"Гарматна повозка",     emoji:"💥", img:"https://royaleapi.github.io/cr-api-assets/cards-150/cannon-cart.png"},
+  {name:"Шахтар",               emoji:"⛏️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/miner.png"},
+  {name:"Принц",                emoji:"🤴", img:"https://royaleapi.github.io/cr-api-assets/cards-150/prince.png"},
+  {name:"Принцеса",             emoji:"👸", img:"https://royaleapi.github.io/cr-api-assets/cards-150/princess.png"},
+  {name:"Розбійники",           emoji:"🗡️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/rascals.png"},
+  {name:"Рибалка",              emoji:"🎣", img:"https://royaleapi.github.io/cr-api-assets/cards-150/fisherman.png"},
+  {name:"Лицар",                emoji:"⚔️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/knight.png"},
+  {name:"Скелети",              emoji:"💀", img:"https://royaleapi.github.io/cr-api-assets/cards-150/skeletons.png"},
+  {name:"Стінобої",             emoji:"🪨", img:"https://royaleapi.github.io/cr-api-assets/cards-150/wall-breakers.png"},
+  {name:"Темний принц",         emoji:"🖤", img:"https://royaleapi.github.io/cr-api-assets/cards-150/dark-prince.png"},
+  {name:"Три мушкетери",        emoji:"🔫", img:"https://royaleapi.github.io/cr-api-assets/cards-150/three-musketeers.png"},
+  {name:"Фенікс",               emoji:"🦅", img:"https://royaleapi.github.io/cr-api-assets/cards-150/phoenix.png"},
+  {name:"Цілителька-воїн",      emoji:"💚", img:"https://royaleapi.github.io/cr-api-assets/cards-150/battle-healer.png"},
+  {name:"Куля",                 emoji:"💣", img:"https://royaleapi.github.io/cr-api-assets/cards-150/balloon.png"},
+  {name:"Електричний дух",      emoji:"⚡", img:"https://royaleapi.github.io/cr-api-assets/cards-150/electro-spirit.png"},
+  {name:"Електрогігант",        emoji:"⚡", img:"https://royaleapi.github.io/cr-api-assets/cards-150/electro-giant.png"},
+  {name:"Електродракон",        emoji:"🐲", img:"https://royaleapi.github.io/cr-api-assets/cards-150/electro-dragon.png"},
+  {name:"Еліксирний голем",     emoji:"🧪", img:"https://royaleapi.github.io/cr-api-assets/cards-150/elixir-golem.png"},
+  {name:"Елітні варвари",       emoji:"🪓", img:"https://royaleapi.github.io/cr-api-assets/cards-150/elite-barbarians.png"},
+  {name:"Варта",                emoji:"🛡️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/guards.png"},
 ];
 
 const BS_LOCATIONS = [
@@ -442,7 +667,7 @@ const CR_LOCATIONS = [
 // РЕЖИМ ГРИ
 // ═══════════════════════════════════════════════════════════════════════════
 
-let gameMode = 'bs'; // 'bs' або 'cr'
+let gameMode = 'bs';
 
 function selectMode(mode) {
   gameMode = mode;
@@ -456,7 +681,7 @@ function selectMode(mode) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ЗВУКИ (Web Audio API — без зовнішніх файлів, GitHub Pages friendly)
+// ЗВУКИ
 // ═══════════════════════════════════════════════════════════════════════════
 
 let audioCtx = null;
@@ -464,7 +689,6 @@ function getCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   return audioCtx;
 }
-
 function playTone(freq, type, duration, volume=0.18, delay=0) {
   try {
     const ctx = getCtx();
@@ -482,41 +706,13 @@ function playTone(freq, type, duration, volume=0.18, delay=0) {
 }
 
 const SFX = {
-  // Клік по кнопці — швидкий клац
-  click() {
-    playTone(800, 'square', 0.06, 0.12);
-  },
-  // Старт гри — висхідний акорд
-  start() {
-    [261, 329, 392, 523].forEach((f, i) => playTone(f, 'sine', 0.25, 0.15, i * 0.07));
-  },
-  // Свайп / відкриття карти
-  reveal() {
-    playTone(300, 'sine', 0.08, 0.1);
-    playTone(600, 'sine', 0.15, 0.12, 0.06);
-    playTone(900, 'sine', 0.1,  0.08, 0.12);
-  },
-  // Карта мирного — приємний дзвіночок
-  peace() {
-    [523, 659, 784].forEach((f, i) => playTone(f, 'sine', 0.3, 0.13, i * 0.08));
-  },
-  // Наступний гравець
-  next() {
-    playTone(440, 'sine', 0.1, 0.12);
-    playTone(550, 'sine', 0.1, 0.1, 0.08);
-  },
-  // Фінал — фанфара
-  done() {
-    const melody = [523,659,784,1047];
-    melody.forEach((f, i) => playTone(f, 'sine', 0.3, 0.18, i * 0.1));
-    playTone(523, 'sine', 0.5, 0.15, 0.45);
-  },
-  // Конфеті
-  pop() {
-    for(let i=0; i<5; i++) {
-      playTone(400 + Math.random()*400, 'sine', 0.08, 0.07, i * 0.04);
-    }
-  }
+  click()   { playTone(800,'square',0.06,0.12); },
+  start()   { [261,329,392,523].forEach((f,i)=>playTone(f,'sine',0.25,0.15,i*.07)); },
+  reveal()  { playTone(300,'sine',0.08,.1); playTone(600,'sine',0.15,.12,.06); playTone(900,'sine',0.1,.08,.12); },
+  peace()   { [523,659,784].forEach((f,i)=>playTone(f,'sine',0.3,.13,i*.08)); },
+  next()    { playTone(440,'sine',0.1,.12); playTone(550,'sine',0.1,.1,.08); },
+  done()    { [523,659,784,1047].forEach((f,i)=>playTone(f,'sine',0.3,.18,i*.1)); playTone(523,'sine',0.5,.15,.45); },
+  pop()     { for(let i=0;i<5;i++) playTone(400+Math.random()*400,'sine',0.08,.07,i*.04); }
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -525,14 +721,12 @@ const SFX = {
 
 function shuffle(arr) {
   const a = [...arr];
-  // Fisher-Yates — криптографічно чистий рандом
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
 }
-
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -589,8 +783,6 @@ function showScreen(n) {
   ['settings','game','done','results'].forEach(s =>
     document.getElementById('screen-'+s).classList.toggle('hidden', s !== n));
 }
-
-// Робимо selectMode глобальною для onclick в HTML
 window.selectMode = selectMode;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -610,26 +802,66 @@ function popParticles() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// HELPER: створити зображення з fallback
+// ═══════════════════════════════════════════════════════════════════════════
+
+function makeCharImgHTML(char, frameClass, bgClass, glowClass) {
+  const escapedEmoji = char.emoji;
+  return `
+    <div class="char-img-container">
+      <div class="${frameClass}"></div>
+      <div class="char-img-bg ${bgClass}"></div>
+      <div class="char-img">
+        <img
+          src="${char.img}"
+          alt="${char.name}"
+          class="loading"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+          onload="this.classList.remove('loading');this.classList.add('loaded');"
+        />
+        <div class="char-fallback" style="display:none">${escapedEmoji}</div>
+      </div>
+      <div class="${glowClass}"></div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // РЕНДЕР КАРТИ РОЛІ
 // ═══════════════════════════════════════════════════════════════════════════
 
 function renderRoleCard(idx) {
   const {brawler, location, isImpostor} = roles[idx];
   const rc = document.getElementById('role-card');
+
   if (isImpostor) {
     rc.className = 'role-card role-impostor';
     rc.innerHTML = `
-      <div class="role-emoji" style="animation:shake 1.1s ease-in-out infinite">💀</div>
-      <div class="imp-title">Ти Імпостер!</div>
-      <div class="imp-sub">Не видай себе — обдури всіх!</div>
-      <div class="imp-badge">☠️ ІМПОСТЕР</div>`;
+      <div class="char-img-wrap">
+        <div class="char-img-container">
+          <div class="char-frame-imp"></div>
+          <div class="char-img-bg char-img-bg-imp"></div>
+          <div class="char-img" style="display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:64px;line-height:1;position:relative;z-index:2;animation:shake 1.1s ease-in-out infinite">💀</span>
+          </div>
+          <div class="char-glow-imp"></div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="imp-title">Ти Імпостер!</div>
+        <div class="imp-sub">Не видай себе — обдури всіх!</div>
+        <div class="imp-badge">☠️ ІМПОСТЕР</div>
+      </div>`;
   } else {
     rc.className = 'role-card role-peace';
     rc.innerHTML = `
-      <div class="role-emoji">${brawler.emoji}</div>
-      <div class="role-name">${brawler.name}</div>
-      <div class="role-loc">📍 ${location}</div>
-      <div class="role-badge">✅ МИРНИЙ</div>`;
+      <div class="char-img-wrap">
+        ${makeCharImgHTML(brawler, 'char-frame-peace', 'char-img-bg-peace', 'char-glow-peace')}
+      </div>
+      <div class="card-bottom">
+        <div class="role-name">${brawler.name}</div>
+        <div class="role-loc">📍 ${location}</div>
+        <div class="role-badge">✅ МИРНИЙ</div>
+      </div>`;
   }
 }
 
@@ -659,25 +891,15 @@ function renderCard(idx) {
 function doReveal() {
   if (revealed) return;
   revealed = true;
-
   SFX.reveal();
-
   const cover = document.getElementById('cover');
   cover.style.transition = 'transform 0.45s cubic-bezier(.16,1,.3,1)';
   cover.style.transform = 'translateY(-110%)';
-
-  setTimeout(() => {
-    popParticles();
-    SFX.peace();
-  }, 200);
-
-  // Автозакриття через 2.5с
+  setTimeout(() => { popParticles(); SFX.peace(); }, 200);
   autoTimer = setTimeout(() => {
     cover.style.transition = 'transform 0.5s cubic-bezier(.16,1,.3,1)';
     cover.style.transform = 'translateY(0)';
-    setTimeout(() => {
-      document.getElementById('btn-next').classList.add('on');
-    }, 520);
+    setTimeout(() => { document.getElementById('btn-next').classList.add('on'); }, 520);
   }, 2500);
 }
 
@@ -689,72 +911,86 @@ function doReveal() {
   const wrap = document.getElementById('card-wrap');
   let sy=0, sx=0, drag=false, delta=0;
   const THRESHOLD = 55;
-
-  function start(y, x) { if(revealed) return; sy=y; sx=x; drag=true; delta=0;
+  function start(y,x) { if(revealed)return; sy=y; sx=x; drag=true; delta=0;
     document.getElementById('cover').style.transition='none'; }
-  function move(y, x) {
-    if (!drag || revealed) return;
-    const dy = y-sy, dx = x-sx;
-    if (Math.abs(dx) > Math.abs(dy)+12) { drag=false; return; }
-    delta = Math.min(0, dy);
-    document.getElementById('cover').style.transform = `translateY(${delta}px)`;
+  function move(y,x) {
+    if(!drag||revealed)return;
+    const dy=y-sy, dx=x-sx;
+    if(Math.abs(dx)>Math.abs(dy)+12){drag=false;return;}
+    delta=Math.min(0,dy);
+    document.getElementById('cover').style.transform=`translateY(${delta}px)`;
   }
   function end() {
-    if (!drag) return; drag=false;
-    if (Math.abs(delta) >= THRESHOLD) { doReveal(); }
+    if(!drag)return; drag=false;
+    if(Math.abs(delta)>=THRESHOLD){doReveal();}
     else {
-      const c = document.getElementById('cover');
-      c.style.transition = 'transform 0.35s cubic-bezier(.16,1,.3,1)';
-      c.style.transform = 'translateY(0)';
+      const c=document.getElementById('cover');
+      c.style.transition='transform 0.35s cubic-bezier(.16,1,.3,1)';
+      c.style.transform='translateY(0)';
     }
-    delta = 0;
+    delta=0;
   }
-
-  wrap.addEventListener('touchstart', e => { const t=e.touches[0]; start(t.clientY,t.clientX); }, {passive:true});
-  wrap.addEventListener('touchmove',  e => { const t=e.touches[0]; move(t.clientY,t.clientX); },  {passive:true});
-  wrap.addEventListener('touchend',   end);
-  wrap.addEventListener('mousedown',  e => start(e.clientY, e.clientX));
-  window.addEventListener('mousemove', e => { if(drag) move(e.clientY, e.clientX); });
-  window.addEventListener('mouseup',   end);
+  wrap.addEventListener('touchstart',e=>{const t=e.touches[0];start(t.clientY,t.clientX);},{passive:true});
+  wrap.addEventListener('touchmove', e=>{const t=e.touches[0];move(t.clientY,t.clientX);},{passive:true});
+  wrap.addEventListener('touchend',  end);
+  wrap.addEventListener('mousedown', e=>start(e.clientY,e.clientX));
+  window.addEventListener('mousemove',e=>{if(drag)move(e.clientY,e.clientX);});
+  window.addEventListener('mouseup', end);
 })();
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ЕКРАН РЕЗУЛЬТАТІВ
+// РЕЗУЛЬТАТИ
 // ═══════════════════════════════════════════════════════════════════════════
+
+function makeThumbHTML(char, isImp) {
+  if (isImp) {
+    return `<div class="result-thumb imp-thumb">💀</div>`;
+  }
+  return `
+    <div class="result-thumb">
+      <img src="${char.img}" alt="${char.name}"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+           onload="this.style.opacity='1';" style="opacity:0;transition:opacity .3s">
+      <span style="display:none;font-size:22px">${char.emoji}</span>
+    </div>`;
+}
 
 function showResults() {
   const {brawler, location} = roles[0];
   const charLabel = gameMode === 'cr' ? 'Персонаж' : 'Бравлер';
   const impostorNums = roles
-    .map((r, i) => r.isImpostor ? `Гравець ${i+1}` : null)
+    .map((r,i) => r.isImpostor ? `Гравець ${i+1}` : null)
     .filter(Boolean);
 
-  // Інфо-картка
   const infoCard = document.getElementById('results-info-card');
   infoCard.innerHTML = `
-    <div class="ric-emoji">${brawler.emoji}</div>
+    <div class="ric-thumb">
+      <img src="${brawler.img}" alt="${brawler.name}"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+           onload="this.style.opacity='1';" style="opacity:0;transition:opacity .3s">
+      <span style="display:none;font-size:28px">${brawler.emoji}</span>
+    </div>
     <div class="ric-text">
       <div style="font-size:10px;color:#a78bfa;font-weight:800;letter-spacing:2px;text-transform:uppercase">${charLabel}</div>
       <div class="ric-brawler">${brawler.name}</div>
       <div class="ric-loc">📍 ${location}</div>
       <div style="margin-top:4px;font-size:11px;color:#6ee7b7">
-        Імпостер${impostorNums.length > 1 ? 'и' : ''}: <strong>${impostorNums.join(', ')}</strong>
+        Імпостер${impostorNums.length>1?'и':''}: <strong>${impostorNums.join(', ')}</strong>
       </div>
     </div>`;
 
-  // Список гравців
   const list = document.getElementById('results-list');
   list.innerHTML = '';
-  roles.forEach((r, i) => {
+  roles.forEach((r,i) => {
     const row = document.createElement('div');
     row.className = 'result-row' + (r.isImpostor ? ' is-imp' : '');
     row.style.setProperty('--rd', `${i * 0.06}s`);
     row.innerHTML = `
       <div class="result-num">${i+1}</div>
-      <div class="result-emoji">${r.isImpostor ? '💀' : r.brawler.emoji}</div>
+      ${makeThumbHTML(r.brawler, r.isImpostor)}
       <div class="result-info">
         <div class="result-brawler">${r.isImpostor ? 'ІМПОСТЕР' : r.brawler.name}</div>
-        <div class="result-loc">${r.isImpostor ? 'Не знав локацію' : '📍 ' + r.location}</div>
+        <div class="result-loc">${r.isImpostor ? 'Не знав локацію' : '📍 '+r.location}</div>
       </div>
       <div class="result-pill ${r.isImpostor ? 'pill-imp' : 'pill-peace'}">
         ${r.isImpostor ? '☠️ ІМП' : '✅ МИР'}
@@ -770,16 +1006,10 @@ function showResults() {
 // ═══════════════════════════════════════════════════════════════════════════
 
 document.getElementById('btn-next').onclick = () => {
-  SFX.next();
-  current++;
-  if (current >= roles.length) {
-    SFX.done();
-    showScreen('done');
-  } else {
-    renderCard(current);
-  }
+  SFX.next(); current++;
+  if (current >= roles.length) { SFX.done(); showScreen('done'); }
+  else { renderCard(current); }
 };
-
 document.getElementById('btn-start').onclick = () => {
   SFX.start();
   roles = generateRoles(players, impostors);
@@ -787,27 +1017,10 @@ document.getElementById('btn-start').onclick = () => {
   showScreen('game');
   renderCard(0);
 };
-
-document.getElementById('btn-cancel').onclick = () => {
-  SFX.click();
-  showScreen('settings');
-};
-
-document.getElementById('btn-restart').onclick = () => {
-  SFX.click();
-  showScreen('settings');
-};
-
-document.getElementById('btn-show-results').onclick = () => {
-  SFX.click();
-  showResults();
-};
-
-document.getElementById('btn-results-new').onclick = () => {
-  SFX.click();
-  showScreen('settings');
-};
-
+document.getElementById('btn-cancel').onclick    = () => { SFX.click(); showScreen('settings'); };
+document.getElementById('btn-restart').onclick   = () => { SFX.click(); showScreen('settings'); };
+document.getElementById('btn-show-results').onclick = () => { SFX.click(); showResults(); };
+document.getElementById('btn-results-new').onclick  = () => { SFX.click(); showScreen('settings'); };
 document.getElementById('btn-results-same').onclick = () => {
   SFX.start();
   roles = generateRoles(players, impostors);
