@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Хто Імпостер? — Brawl Stars</title>
+  <title>Хто Імпостер?</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet"/>
   <style>
@@ -39,6 +39,18 @@
 
     .screen{width:100%;max-width:400px;display:flex;flex-direction:column;align-items:center;gap:18px;}
     .screen.hidden{display:none;}
+
+    /* ── GAME PICKER ── */
+    .picker-wrap{display:flex;gap:12px;width:100%;}
+    .picker-btn{flex:1;height:80px;border-radius:20px;border:2px solid rgba(255,255,255,.15);
+                background:rgba(255,255,255,.08);cursor:pointer;
+                display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+                transition:transform .12s,border-color .15s,background .15s;-webkit-tap-highlight-color:transparent;}
+    .picker-btn:active{transform:scale(.94);}
+    .picker-btn.active{border-color:var(--yellow);background:rgba(250,204,21,.12);}
+    .picker-btn.active-cr{border-color:#a855f7;background:rgba(168,85,247,.14);}
+    .picker-icon{font-size:30px;line-height:1;}
+    .picker-label{font-family:var(--ftitle);font-size:13px;letter-spacing:1.5px;color:#fff;}
 
     /* ── SETTINGS ── */
     .title-emoji{font-size:58px;display:block;text-align:center;animation:wobble 3s ease-in-out infinite;}
@@ -224,8 +236,21 @@
     <div>
       <span class="title-emoji">🕵️</span>
       <h1>ХТО ІМПОСТЕР?</h1>
-      <p class="subtitle">Brawl Stars Edition</p>
+      <p class="subtitle" id="mode-subtitle">Brawl Stars Edition</p>
     </div>
+
+    <!-- ВИБІР ГРИ -->
+    <div class="picker-wrap">
+      <button class="picker-btn active" id="pick-bs" onclick="selectMode('bs')">
+        <span class="picker-icon">⭐</span>
+        <span class="picker-label">BRAWL STARS</span>
+      </button>
+      <button class="picker-btn" id="pick-cr" onclick="selectMode('cr')">
+        <span class="picker-icon">👑</span>
+        <span class="picker-label">CLASH ROYALE</span>
+      </button>
+    </div>
+
     <div class="card">
       <div class="sec-label">👥 Кількість гравців</div>
       <div class="stepper">
@@ -310,50 +335,125 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 const BRAWLERS = [
-  {name:"8-BIT",      emoji:"👾"},{name:"R-T",          emoji:"🤖"},
-  {name:"Амбер",      emoji:"🔥"},{name:"Анджело",      emoji:"🏹"},
-  {name:"Базз",       emoji:"🐝"},{name:"Байрон",       emoji:"💊"},
-  {name:"Барлі",      emoji:"🍺"},{name:"Белль",        emoji:"🎯"},
-  {name:"Бібі",       emoji:"🏏"},{name:"Бонні",        emoji:"🎠"},
-  {name:"Брок",       emoji:"🚀"},{name:"Булл",         emoji:"🐂"},
-  {name:"Бастер",     emoji:"🛡️"},{name:"Беа",          emoji:"🐝"},
-  {name:"Бо",         emoji:"🏹"},{name:"Вольт",        emoji:"⚡"},
-  {name:"Гас",        emoji:"👻"},{name:"Грей",         emoji:"🚪"},
-  {name:"Гром",       emoji:"💥"},{name:"Джанет",       emoji:"🎤"},
-  {name:"Джессі",     emoji:"⚡"},{name:"Джин",         emoji:"🧞"},
-  {name:"Джекі",      emoji:"🔩"},{name:"Дерріл",       emoji:"🛢️"},
-  {name:"Динамайк",   emoji:"💣"},{name:"Дуг",          emoji:"🌭"},
-  {name:"Едгар",      emoji:"🖤"},{name:"Ель Прімо",    emoji:"🥊"},
-  {name:"Емз",        emoji:"💀"},{name:"Еш",           emoji:"🔥"},
-  {name:"Колетт",     emoji:"💰"},{name:"Кольт",        emoji:"🤠"},
-  {name:"Корделіус",  emoji:"🍄"},{name:"Кроу",         emoji:"🐦"},
-  {name:"Ларрі і Лорі",emoji:"🔧"},{name:"Леон",        emoji:"🐱"},
-  {name:"Лола",       emoji:"🌟"},{name:"Лу",           emoji:"🧊"},
-  {name:"Макс",       emoji:"👟"},{name:"Мейсі",        emoji:"🎯"},
-  {name:"Менді",      emoji:"🌸"},{name:"Меґ",          emoji:"🤖"},
-  {name:"Мортіс",     emoji:"⚰️"},{name:"Містер П.",    emoji:"🎩"},
-  {name:"Нані",       emoji:"🤖"},{name:"Ніта",         emoji:"🐻"},
-  {name:"Отіс",       emoji:"🎨"},{name:"Пайпер",       emoji:"☂️"},
-  {name:"Пенні",      emoji:"🏴‍☠️"},{name:"Перл",         emoji:"🦞"},
-  {name:"Поко",       emoji:"🎸"},{name:"Пем",          emoji:"🔧"},
-  {name:"Ріко",       emoji:"🎳"},{name:"Роза",         emoji:"🌹"},
-  {name:"Руфс",       emoji:"⭐"},{name:"Сквік",        emoji:"🧪"},
-  {name:"Спайк",      emoji:"🌵"},{name:"Спраут",       emoji:"🌱"},
-  {name:"Сту",        emoji:"🛹"},{name:"Сем",          emoji:"🥊"},
-  {name:"Сенді",      emoji:"🏜️"},{name:"Тара",         emoji:"🃏"},
-  {name:"Тік",        emoji:"⏰"},{name:"Френк",        emoji:"🔨"},
-  {name:"Фанг",       emoji:"🦷"},{name:"Хенк",         emoji:"🐋"},
-  {name:"Чак",        emoji:"⚡"},{name:"Чарлі",        emoji:"🕷️"},
-  {name:"Честер",     emoji:"🎪"},{name:"Шеллі",        emoji:"🔫"},
+  {name:"8-BIT",        emoji:"👾"},{name:"R-T",            emoji:"🤖"},
+  {name:"Амбер",        emoji:"🔥"},{name:"Анджело",        emoji:"🏹"},
+  {name:"Базз",         emoji:"🐝"},{name:"Байрон",         emoji:"💊"},
+  {name:"Барлі",        emoji:"🍺"},{name:"Белль",          emoji:"🎯"},
+  {name:"Бібі",         emoji:"🏏"},{name:"Бонні",          emoji:"🎠"},
+  {name:"Брок",         emoji:"🚀"},{name:"Булл",           emoji:"🐂"},
+  {name:"Бастер",       emoji:"🛡️"},{name:"Беа",            emoji:"🐝"},
+  {name:"Бо",           emoji:"🏹"},{name:"Вольт",          emoji:"⚡"},
+  {name:"Гас",          emoji:"👻"},{name:"Грей",           emoji:"🚪"},
+  {name:"Гром",         emoji:"💥"},{name:"Джанет",         emoji:"🎤"},
+  {name:"Джессі",       emoji:"⚡"},{name:"Джин",           emoji:"🧞"},
+  {name:"Джекі",        emoji:"🔩"},{name:"Дерріл",         emoji:"🛢️"},
+  {name:"Динамайк",     emoji:"💣"},{name:"Дуг",            emoji:"🌭"},
+  {name:"Едгар",        emoji:"🖤"},{name:"Ель Прімо",      emoji:"🥊"},
+  {name:"Емз",          emoji:"💀"},{name:"Еш",             emoji:"🔥"},
+  {name:"Колетт",       emoji:"💰"},{name:"Кольт",          emoji:"🤠"},
+  {name:"Корделіус",    emoji:"🍄"},{name:"Кроу",           emoji:"🐦"},
+  {name:"Ларрі і Лорі", emoji:"🔧"},{name:"Леон",           emoji:"🐱"},
+  {name:"Лола",         emoji:"🌟"},{name:"Лу",             emoji:"🧊"},
+  {name:"Макс",         emoji:"👟"},{name:"Мейсі",          emoji:"🎯"},
+  {name:"Менді",        emoji:"🌸"},{name:"Меґ",            emoji:"🤖"},
+  {name:"Мортіс",       emoji:"⚰️"},{name:"Містер П.",      emoji:"🎩"},
+  {name:"Нані",         emoji:"🤖"},{name:"Ніта",           emoji:"🐻"},
+  {name:"Отіс",         emoji:"🎨"},{name:"Пайпер",         emoji:"☂️"},
+  {name:"Пенні",        emoji:"🏴‍☠️"},{name:"Перл",           emoji:"🦞"},
+  {name:"Поко",         emoji:"🎸"},{name:"Пем",            emoji:"🔧"},
+  {name:"Ріко",         emoji:"🎳"},{name:"Роза",           emoji:"🌹"},
+  {name:"Руфс",         emoji:"⭐"},{name:"Сквік",          emoji:"🧪"},
+  {name:"Спайк",        emoji:"🌵"},{name:"Спраут",         emoji:"🌱"},
+  {name:"Сту",          emoji:"🛹"},{name:"Сем",            emoji:"🥊"},
+  {name:"Сенді",        emoji:"🏜️"},{name:"Тара",           emoji:"🃏"},
+  {name:"Тік",          emoji:"⏰"},{name:"Френк",          emoji:"🔨"},
+  {name:"Фанг",         emoji:"🦷"},{name:"Хенк",           emoji:"🐋"},
+  {name:"Чак",          emoji:"⚡"},{name:"Чарлі",          emoji:"🕷️"},
+  {name:"Честер",       emoji:"🎪"},{name:"Шеллі",          emoji:"🔫"},
 ];
 
-const LOCATIONS = [
+const CR_CHARS = [
+  {name:"Адська гончая",        emoji:"🐕"},{name:"Армія скелетів",       emoji:"💀"},
+  {name:"Банда гоблінів",       emoji:"👺"},{name:"Бандитка",             emoji:"🗡️"},
+  {name:"Берсеркша",            emoji:"⚔️"},{name:"Бойовий таран",        emoji:"🪵"},
+  {name:"Бочка зі скелетами",   emoji:"🪣"},{name:"Валькірія",            emoji:"🛡️"},
+  {name:"Варвари",              emoji:"🪓"},{name:"Відьма",               emoji:"🧙"},
+  {name:"Відьмина бабуся",      emoji:"👵"},{name:"Вершник на кабані",    emoji:"🐗"},
+  {name:"Вершниця на барані",   emoji:"🐏"},{name:"Вишибала",             emoji:"🏏"},
+  {name:"Гігант",               emoji:"🗿"},{name:"Гігантський скелет",   emoji:"☠️"},
+  {name:"Головна бандитка",     emoji:"👸"},{name:"Гоблін з дротиками",   emoji:"🎯"},
+  {name:"Гоблін-гігант",        emoji:"👹"},{name:"Гоблін-підривник",     emoji:"💣"},
+  {name:"Гоблінштейн",          emoji:"⚡"},{name:"Гобліни",              emoji:"👺"},
+  {name:"Гобліни-списники",     emoji:"🔱"},{name:"Голем",                emoji:"🪨"},
+  {name:"Громовержець",         emoji:"⚡"},{name:"Дракончик",            emoji:"🐲"},
+  {name:"Дровосек",             emoji:"🪚"},{name:"Дух зцілення",         emoji:"💚"},
+  {name:"Золотий лицар",        emoji:"🏅"},{name:"Імператриця духів",    emoji:"👻"},
+  {name:"Чарівник",             emoji:"🧙"},{name:"Королева лучниць",     emoji:"🏹"},
+  {name:"Королівські кабани",   emoji:"🐗"},{name:"Королівські рекрути",  emoji:"⚔️"},
+  {name:"Королівський гігант",  emoji:"👑"},{name:"Королівський привид",  emoji:"👻"},
+  {name:"Король скелетів",      emoji:"💀"},{name:"Кісткові дракони",     emoji:"🦴"},
+  {name:"Льодовий голем",       emoji:"🧊"},{name:"Льодовий дух",         emoji:"❄️"},
+  {name:"Льодовий чарівник",    emoji:"🧊"},{name:"Льодовий супер-голем", emoji:"🧊"},
+  {name:"Кажани",               emoji:"🦇"},{name:"Летючка",              emoji:"🦇"},
+  {name:"Лучниці",              emoji:"🏹"},{name:"Магічний лучник",      emoji:"✨"},
+  {name:"Маленький Принц",      emoji:"🤴"},{name:"Мегамініон",           emoji:"😈"},
+  {name:"Мегалицар",            emoji:"⚔️"},{name:"Міні-генератори",      emoji:"⚡"},
+  {name:"Міні-П.Е.К.К.А.",      emoji:"🤖"},{name:"Міньони",              emoji:"😈"},
+  {name:"Монах",                emoji:"🥋"},{name:"Мушкетер",             emoji:"🔫"},
+  {name:"Нічна відьма",         emoji:"🌙"},{name:"Вогняна лучниця",      emoji:"🔥"},
+  {name:"Вогняний дух",         emoji:"🔥"},{name:"Орда міньонів",        emoji:"😈"},
+  {name:"Мисливець",            emoji:"🎯"},{name:"П.Е.К.К.А.",           emoji:"🤖"},
+  {name:"Кат",                  emoji:"⚔️"},{name:"Піч",                  emoji:"🔥"},
+  {name:"Полум'яний дракон",    emoji:"🔥"},{name:"Гарматна повозка",     emoji:"💥"},
+  {name:"Підозрілий кущ",       emoji:"🌿"},{name:"Підривник",            emoji:"💣"},
+  {name:"Принц",                emoji:"🤴"},{name:"Принцеса",             emoji:"👸"},
+  {name:"Розбійники",           emoji:"🗡️"},{name:"Рунічна гігантша",     emoji:"🪨"},
+  {name:"Рибалка",              emoji:"🎣"},{name:"Лицар",                emoji:"⚔️"},
+  {name:"Санта на кабані",      emoji:"🎅"},{name:"Скелети",              emoji:"💀"},
+  {name:"Спаркі",               emoji:"⚡"},{name:"Стінобої",             emoji:"🪨"},
+  {name:"Варта",                emoji:"🛡️"},{name:"Супер-адська гончая",  emoji:"🐕"},
+  {name:"Супервідьма",          emoji:"🧙"},{name:"Супер-маг. лучник",    emoji:"✨"},
+  {name:"Супер-міні-П.Е.К.К.А.",emoji:"🤖"},{name:"Темний принц",        emoji:"🖤"},
+  {name:"Террі",                emoji:"🎭"},{name:"Тесла",                emoji:"⚡"},
+  {name:"Три мушкетери",        emoji:"🔫"},{name:"Тріо чарівників",      emoji:"🧙"},
+  {name:"Фенікс",               emoji:"🦅"},{name:"Цілителька-воїн",      emoji:"💚"},
+  {name:"Куля",                 emoji:"💣"},{name:"Шахтар",               emoji:"⛏️"},
+  {name:"Шустрий шахтар",       emoji:"⛏️"},{name:"Електричний дух",      emoji:"⚡"},
+  {name:"Електрогігант",        emoji:"⚡"},{name:"Електродракон",        emoji:"🐲"},
+  {name:"Еліксирний голем",     emoji:"🧪"},{name:"Елітні варвари",       emoji:"🪓"},
+];
+
+const BS_LOCATIONS = [
   "Смарагдова печера","Арена Шоудаун","Шахта кристалів","Магазин Барлі",
   "Стародавнє місто","Острів піратів","Кактусова пустеля","Зачарований ліс",
   "Металевий завод","Зірковий стадіон","Підводна база","Вулканічна фортеця",
   "Хмарний замок","Підземелля монстрів","Крижана фортеця","Робот-арена",
   "Тропічний пляж","Пустеля примар","Космічна станція","Місто сутінок",
 ];
+
+const CR_LOCATIONS = [
+  "Арена Королівства","Кришталева поляна","Темний ліс","Броварня",
+  "Льодова арена","Замок короля","Дракончикова долина","Вогняний міст",
+  "Гоблінова арена","Арена призраків","Башта відьом","Поле битви",
+  "Королівство Короля","Легендарна арена","Вершина Небес",
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// РЕЖИМ ГРИ
+// ═══════════════════════════════════════════════════════════════════════════
+
+let gameMode = 'bs'; // 'bs' або 'cr'
+
+function selectMode(mode) {
+  gameMode = mode;
+  SFX.click();
+  const bsBtn = document.getElementById('pick-bs');
+  const crBtn = document.getElementById('pick-cr');
+  bsBtn.className = 'picker-btn' + (mode === 'bs' ? ' active' : '');
+  crBtn.className = 'picker-btn' + (mode === 'cr' ? ' active-cr' : '');
+  document.getElementById('mode-subtitle').textContent =
+    mode === 'bs' ? 'Brawl Stars Edition' : 'Clash Royale Edition';
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ЗВУКИ (Web Audio API — без зовнішніх файлів, GitHub Pages friendly)
@@ -440,8 +540,10 @@ function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 // ═══════════════════════════════════════════════════════════════════════════
 
 function generateRoles(playerCount, impostorCount) {
-  const brawler  = pick(BRAWLERS);
-  const location = pick(LOCATIONS);
+  const chars    = gameMode === 'cr' ? CR_CHARS : BRAWLERS;
+  const locs     = gameMode === 'cr' ? CR_LOCATIONS : BS_LOCATIONS;
+  const brawler  = pick(chars);
+  const location = pick(locs);
   const indices  = Array.from({length: playerCount}, (_, i) => i);
   const impSet   = new Set(shuffle(indices).slice(0, impostorCount));
   return Array.from({length: playerCount}, (_, i) => ({
@@ -487,6 +589,9 @@ function showScreen(n) {
   ['settings','game','done','results'].forEach(s =>
     document.getElementById('screen-'+s).classList.toggle('hidden', s !== n));
 }
+
+// Робимо selectMode глобальною для onclick в HTML
+window.selectMode = selectMode;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ЧАСТИНКИ
@@ -618,7 +723,8 @@ function doReveal() {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function showResults() {
-  const {brawler, location} = roles[0]; // всі мають однакового бравлера
+  const {brawler, location} = roles[0];
+  const charLabel = gameMode === 'cr' ? 'Персонаж' : 'Бравлер';
   const impostorNums = roles
     .map((r, i) => r.isImpostor ? `Гравець ${i+1}` : null)
     .filter(Boolean);
@@ -628,6 +734,7 @@ function showResults() {
   infoCard.innerHTML = `
     <div class="ric-emoji">${brawler.emoji}</div>
     <div class="ric-text">
+      <div style="font-size:10px;color:#a78bfa;font-weight:800;letter-spacing:2px;text-transform:uppercase">${charLabel}</div>
       <div class="ric-brawler">${brawler.name}</div>
       <div class="ric-loc">📍 ${location}</div>
       <div style="margin-top:4px;font-size:11px;color:#6ee7b7">
