@@ -926,140 +926,196 @@ function renderCard(idx) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ВІДКРИТТЯ КАРТИ — фізична симуляція (rAF + гравітація + відскок)
+// ФІЗИЧНИЙ ДВИЖОК — rAF, гравітація, опір повітря, відскоки
 // ═══════════════════════════════════════════════════════════════════════════
 //
-// Замість простого CSS-переходу translateY(-110%) робимо повноцінний політ:
-//   • кидок угору з тією швидкістю, що зафіксована під час свайпу;
-//   • кожен кадр додаємо g*dt до vy → парабола;
-//   • досягаємо вершини, падаємо назад вниз;
-//   • при поверненні до вихідної точки робимо короткий відскок із демпфуванням.
+// Модель:  a = gravity + drag * vy²  (drag гальмує в обох напрямках)
 //
-// Підбір констант: g=1500 px/с², початкова швидкість у діапазоні
-// [-2400, -1300] px/с — політ триває ~2-2.5с, апекс ~600-1000px (далеко поза картою).
+// Константи підібрані так, що:
+//   • легкий флік (~400 px/с) → апекс ~180px над картою, 1.4с польоту
+//   • сильний кидок (~1800 px/с) → апекс ~700px, 2.2с польоту
+//   • 2 відскоки з коефіцієнтом 0.38 (перший ~38%, другий ~15% висоти)
+//   • загальна «посадка» ≈ 2–3с — не надто швидко, не нудно
 
-const PHYS = { gravity: 1500, vMin: -1300, vMax: -2400, bounceDamp: 0.28, bounceMin: 200 };
-let physicsRAF = null;
+const PHYS = {
+  gravity:    1600,   // px/с² — прискорення донизу
+  drag:       0.0012, // коефіцієнт аеродинамічного опору (відносний)
+  vLaunchMin: -900,   // мінімальний кидок (якщо флік занадто слабкий)
+  vLaunchMax: -2200,  // обрізка (щоб не злітала за 1 кадр)
+  bounceDamp: 0.38,   // коефіцієнт відновлення при відскоку
+  bounceMin:  120,    // мінімальна швидкість для наступного відскоку
+  maxBounces: 2,      // кількість відскоків
+};
+
+let physRAF  = null;  // handle поточного rAF
+let physRev  = false; // чи вже летить (окрема змінна, щоб не плутати з `revealed`)
 
 function cancelPhysics() {
-  if (physicsRAF) { cancelAnimationFrame(physicsRAF); physicsRAF = null; }
+  if (physRAF) { cancelAnimationFrame(physRAF); physRAF = null; }
+  physRev = false;
 }
 
+// Запуск фізичної симуляції.
+// startY    — поточне translateY покриву (може бути ≤0 якщо вже трохи потягнули)
+// initialVy — швидкість з пальця (px/с, від'ємна = вгору)
 function physicsLaunch(startY, initialVy) {
   if (revealed) return;
   revealed = true;
+  physRev  = true;
   SFX.reveal();
+
   const cover = document.getElementById('cover');
   cover.style.transition = 'none';
 
   let y  = startY;
-  let vy = initialVy; // px/с, від'ємне = вгору
-  let last = performance.now();
-  let didPop = false;
-  let bouncesLeft = 1;
-  const apexTrigger = -Math.max(120, cover.offsetHeight * 0.45);
+  let vy = Math.max(PHYS.vLaunchMax, Math.min(initialVy, PHYS.vLaunchMin)); // clamp
+  let t  = performance.now();
+
+  let didPop     = false;
+  let bounces    = 0;
+  let prevY      = y;
+
+  // Апекс-тригер: як тільки картка вийшла за межі видимості (≥ висота картки вгору)
+  // викидаємо частинки та граємо звук — один раз.
+  const coverH     = cover.offsetHeight || 240;
+  const apexTrigY  = -(coverH * 0.6);   // 60% висоти картки вище початку
 
   function step(now) {
-    const dt = Math.min((now - last) / 1000, 0.033); // обрізаємо dt при лагах
-    last = now;
+    const rawDt = (now - t) / 1000;
+    // Обрізаємо dt: якщо вкладка прихована/лаг — не даємо великого стрибка
+    const dt = Math.min(rawDt, 0.032);
+    t = now;
 
-    vy += PHYS.gravity * dt;
+    // Drag: опір пропорційний vy² (завжди проти напрямку руху)
+    const dragAcc = PHYS.drag * vy * Math.abs(vy);
+    vy += (PHYS.gravity - dragAcc) * dt;
     y  += vy * dt;
 
-    // Коли карта достатньо «розкрилась» — частинки + звук, один раз
-    if (!didPop && y < apexTrigger) {
+    // ── Частинки на апексі ──
+    if (!didPop && y <= apexTrigY) {
       didPop = true;
       popParticles();
       SFX.peace();
     }
 
-    // Контакт з низом — відскок або зупинка
+    // ── Контакт з підлогою (y ≥ 0) ──
     if (y >= 0) {
       y = 0;
-      if (vy > PHYS.bounceMin && bouncesLeft > 0) {
-        vy = -vy * PHYS.bounceDamp;
-        bouncesLeft--;
-        cover.style.transform = `translate3d(0,${y}px,0)`;
-        physicsRAF = requestAnimationFrame(step);
+      if (bounces < PHYS.maxBounces && Math.abs(vy) > PHYS.bounceMin) {
+        // Відскок: інвертуємо швидкість із затуханням
+        vy = -Math.abs(vy) * PHYS.bounceDamp;
+        bounces++;
+        // Маленький «гупіт» при відскоку
+        try { SFX.click(); } catch(e) {}
+      } else {
+        // Зупинка — картка осіла
+        cover.style.transform = 'translate3d(0,0,0)';
+        physRAF = null;
+        physRev = false;
+        setTimeout(() => document.getElementById('btn-next').classList.add('on'), 100);
         return;
       }
-      cover.style.transform = 'translate3d(0,0,0)';
-      physicsRAF = null;
-      // Невелика затримка, щоб око встигло «приземлити» картку перед появою кнопки
-      setTimeout(() => document.getElementById('btn-next').classList.add('on'), 120);
-      return;
     }
 
     cover.style.transform = `translate3d(0,${y}px,0)`;
-    physicsRAF = requestAnimationFrame(step);
+    prevY  = y;
+    physRAF = requestAnimationFrame(step);
   }
 
-  physicsRAF = requestAnimationFrame(step);
+  physRAF = requestAnimationFrame(step);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// СВАЙП — з відстеженням швидкості пальця
+// СВАЙП — відстеження швидкості + передача імпульсу у фізику
 // ═══════════════════════════════════════════════════════════════════════════
+//
+// Швидкість пальця вимірюємо ковзним середнім по останніх 3 семплах
+// (ringbuffer). Це дає стабільніший результат ніж просто «перший-останній».
 
-(function() {
+(function () {
   const wrap = document.getElementById('card-wrap');
-  let sy=0, sx=0, drag=false, delta=0;
-  let lastY=0, lastT=0, vy=0;     // для оцінки швидкості пальця
-  const THRESHOLD = 55;           // мінімальна відстань, щоб зарахувати свайп
-  const VEL_TRIGGER = -350;       // або достатньо швидкий «кидок» вгору (px/с)
 
-  function start(y,x) {
+  // Стан дотику
+  let drag   = false;
+  let sy     = 0, sx = 0;   // стартова позиція
+  let delta  = 0;            // поточне зміщення (≤0)
+
+  // Ring-buffer для швидкості: зберігаємо останні N семплів {y, t}
+  const VEL_SAMPLES = 4;
+  const velBuf = [];
+  let velIdx   = 0;
+
+  function resetVel(y, t) {
+    velBuf.length = 0;
+    for (let i = 0; i < VEL_SAMPLES; i++) velBuf.push({y, t});
+    velIdx = 0;
+  }
+  function pushVel(y, t) {
+    velBuf[velIdx % VEL_SAMPLES] = {y, t};
+    velIdx++;
+  }
+  // Швидкість між найстарішим і найновішим семплом у буфері
+  function calcVy() {
+    if (velBuf.length < 2) return 0;
+    const newest = velBuf[(velIdx - 1 + VEL_SAMPLES) % VEL_SAMPLES];
+    const oldest = velBuf[velIdx % VEL_SAMPLES];        // найстаріший (перезаписаний наступним)
+    const dt = newest.t - oldest.t;
+    if (dt < 1) return 0;
+    return (newest.y - oldest.y) / dt * 1000; // px/с
+  }
+
+  const THRESHOLD    = 50;    // мін. відстань для зарахування свайпу (px)
+  const VEL_TRIGGER  = -320;  // мін. швидкість флікання (px/с), щоб не вимагати відстані
+
+  function start(y, x) {
     if (revealed) return;
     cancelPhysics();
     sy = y; sx = x; drag = true; delta = 0;
-    lastY = y; lastT = performance.now(); vy = 0;
+    resetVel(y, performance.now());
     document.getElementById('cover').style.transition = 'none';
   }
-  function move(y,x) {
+
+  function move(y, x) {
     if (!drag || revealed) return;
     const dy = y - sy, dx = x - sx;
-    if (Math.abs(dx) > Math.abs(dy) + 12) { drag = false; return; }
+    // Якщо рух переважно горизонтальний — ігноруємо
+    if (Math.abs(dx) > Math.abs(dy) + 10) { drag = false; return; }
     delta = Math.min(0, dy);
     document.getElementById('cover').style.transform = `translate3d(0,${delta}px,0)`;
-    // Оцінка швидкості — ковзне середнє по двох останніх семплах
-    const now = performance.now();
-    const dt  = now - lastT;
-    if (dt > 0) {
-      const inst = (y - lastY) / dt * 1000; // px/с
-      vy = vy * 0.4 + inst * 0.6;           // згладжування
-    }
-    lastY = y; lastT = now;
+    pushVel(y, performance.now());
   }
+
   function end() {
     if (!drag) return;
     drag = false;
-    const passedDist = Math.abs(delta) >= THRESHOLD;
-    const fastFlick  = vy < VEL_TRIGGER;
+    pushVel(/* фіналізуємо */ NaN, performance.now()); // NaN щоб не зламати, але буфер вже заповнений
+    const fingerVy    = calcVy();
+    const passedDist  = Math.abs(delta) >= THRESHOLD;
+    const fastFlick   = fingerVy < VEL_TRIGGER;
 
     if (passedDist || fastFlick) {
-      // Підбираємо стартову швидкість для фізики:
-      //   • беремо реальну швидкість пальця, якщо вона достатньо велика;
-      //   • інакше — мінімальний «кидок», щоб політ був видовищним;
-      //   • зверху обмежуємо, щоб картка не зникала миттєво.
-      let launchVy = Math.min(vy, PHYS.vMin);     // не повільніше, ніж vMin
-      launchVy     = Math.max(launchVy, PHYS.vMax); // не швидше, ніж vMax
-      physicsLaunch(delta, launchVy);
+      // Передаємо реальну швидкість пальця → фізика доробить решту
+      physicsLaunch(delta, fingerVy);
     } else {
-      // Не докинув — пружне повернення
+      // Не докинув — пружньо повертаємо назад
       const c = document.getElementById('cover');
-      c.style.transition = 'transform .35s cubic-bezier(.16,1,.3,1)';
+      c.style.transition = 'transform .4s cubic-bezier(.34,1.4,.64,1)'; // невелике пружньо-перевищення
       c.style.transform  = 'translate3d(0,0,0)';
     }
-    delta = 0; vy = 0;
+    delta = 0;
   }
 
-  wrap.addEventListener('touchstart',e=>{const t=e.touches[0];start(t.clientY,t.clientX);},{passive:true});
-  wrap.addEventListener('touchmove', e=>{const t=e.touches[0];move(t.clientY,t.clientX);},{passive:true});
-  wrap.addEventListener('touchend',  end);
-  wrap.addEventListener('touchcancel', end);
-  wrap.addEventListener('mousedown', e=>start(e.clientY,e.clientX));
-  window.addEventListener('mousemove',e=>{if(drag)move(e.clientY,e.clientX);});
-  window.addEventListener('mouseup', end);
+  // ── listeners (passive там де можливо) ──
+  wrap.addEventListener('touchstart',  e => { const t = e.touches[0]; start(t.clientY, t.clientX); }, { passive: true });
+  wrap.addEventListener('touchmove',   e => { const t = e.touches[0]; move(t.clientY, t.clientX);  }, { passive: true });
+  wrap.addEventListener('touchend',    end, { passive: true });
+  wrap.addEventListener('touchcancel', end, { passive: true });
+
+  // Mouse (десктоп / devtools)
+  let mouseDragging = false;
+  wrap.addEventListener('mousedown', e => { mouseDragging = true; start(e.clientY, e.clientX); });
+  window.addEventListener('mousemove', e => { if (mouseDragging) move(e.clientY, e.clientX); });
+  window.addEventListener('mouseup',   () => { if (mouseDragging) { mouseDragging = false; end(); } });
 })();
 
 // ═══════════════════════════════════════════════════════════════════════════
