@@ -312,6 +312,16 @@
     .btn-ghost{background:none;border:none;color:rgba(196,181,253,.4);
                font-size:13px;font-weight:800;cursor:pointer;padding:6px;}
     .btn-ghost:active{opacity:.5;}
+    .btn-replay{
+      width:100%;height:44px;border-radius:14px;border:none;cursor:pointer;
+      background:rgba(255,255,255,.1);
+      border:1px solid rgba(167,139,250,.35);
+      color:#c4b5fd;font-family:var(--ftitle);font-size:17px;letter-spacing:1px;
+      transition:transform .12s,opacity .3s;
+      opacity:0;pointer-events:none;
+    }
+    .btn-replay.on{opacity:1;pointer-events:auto;}
+    .btn-replay:active{transform:scale(.96);background:rgba(167,139,250,.18);}
 
     /* ── DONE ── */
     .done-emoji{font-size:88px;display:block;text-align:center;
@@ -456,6 +466,7 @@
     </div>
 
     <button class="btn-next" id="btn-next">➡️ Я ЗАПАМ'ЯТАВ — ДАЛІ</button>
+    <button class="btn-replay" id="btn-replay">👁 Переглянути ще раз</button>
     <button class="btn-ghost" id="btn-cancel">↩ Скасувати гру</button>
   </div>
 
@@ -505,9 +516,9 @@ function bsImgUrl(name) {
 }
 
 // Clash Royale: RoyaleAPI assets
-// https://royaleapi.github.io/cr-api-assets/cards-150/{slug}.png
+// https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/{slug}.png
 function crImgUrl(slug) {
-  return `https://royaleapi.github.io/cr-api-assets/cards-150/${slug}.png`;
+  return `https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/${slug}.png`;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -592,76 +603,76 @@ const BRAWLERS = [
 // ═══════════════════════════════════════════════════════════════════════════
 
 const CR_CHARS = [
-  {name:"Адська гончея",        emoji:"🐕", img:"https://royaleapi.github.io/cr-api-assets/cards-150/inferno-dragon.png"},
-  {name:"Армія скелетів",       emoji:"💀", img:"https://royaleapi.github.io/cr-api-assets/cards-150/skeleton-army.png"},
-  {name:"Банда гоблінів",       emoji:"👺", img:"https://royaleapi.github.io/cr-api-assets/cards-150/goblin-gang.png"},
-  {name:"Бандитка",             emoji:"🗡️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/bandit.png"},
-  {name:"Берсеркша",            emoji:"⚔️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/valkyrie.png"},
-  {name:"Бойовий таран",        emoji:"🪵", img:"https://royaleapi.github.io/cr-api-assets/cards-150/battle-ram.png"},
-  {name:"Варвари",              emoji:"🪓", img:"https://royaleapi.github.io/cr-api-assets/cards-150/barbarians.png"},
-  {name:"Відьма",               emoji:"🧙", img:"https://royaleapi.github.io/cr-api-assets/cards-150/witch.png"},
-  {name:"Вершник на кабані",    emoji:"🐗", img:"https://royaleapi.github.io/cr-api-assets/cards-150/hog-rider.png"},
-  {name:"Вершниця на барані",   emoji:"🐏", img:"https://royaleapi.github.io/cr-api-assets/cards-150/ram-rider.png"},
-  {name:"Вишибала",             emoji:"🏏", img:"https://royaleapi.github.io/cr-api-assets/cards-150/bowler.png"},
-  {name:"Гігант",               emoji:"🗿", img:"https://royaleapi.github.io/cr-api-assets/cards-150/giant.png"},
-  {name:"Гігантський скелет",   emoji:"☠️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/giant-skeleton.png"},
-  {name:"Гоблін з дротиками",   emoji:"🎯", img:"https://royaleapi.github.io/cr-api-assets/cards-150/dart-goblin.png"},
-  {name:"Гоблін-гігант",        emoji:"👹", img:"https://royaleapi.github.io/cr-api-assets/cards-150/goblin-giant.png"},
-  {name:"Гобліни",              emoji:"👺", img:"https://royaleapi.github.io/cr-api-assets/cards-150/goblins.png"},
-  {name:"Гобліни-списники",     emoji:"🔱", img:"https://royaleapi.github.io/cr-api-assets/cards-150/spear-goblins.png"},
-  {name:"Голем",                emoji:"🪨", img:"https://royaleapi.github.io/cr-api-assets/cards-150/golem.png"},
-  {name:"Громовержець",         emoji:"⚡", img:"https://royaleapi.github.io/cr-api-assets/cards-150/electro-wizard.png"},
-  {name:"Дракончик",            emoji:"🐲", img:"https://royaleapi.github.io/cr-api-assets/cards-150/baby-dragon.png"},
-  {name:"Дровосек",             emoji:"🪚", img:"https://royaleapi.github.io/cr-api-assets/cards-150/lumberjack.png"},
-  {name:"Дух зцілення",         emoji:"💚", img:"https://royaleapi.github.io/cr-api-assets/cards-150/heal-spirit.png"},
-  {name:"Золотий лицар",        emoji:"🏅", img:"https://royaleapi.github.io/cr-api-assets/cards-150/golden-knight.png"},
-  {name:"Чарівник",             emoji:"🧙", img:"https://royaleapi.github.io/cr-api-assets/cards-150/wizard.png"},
-  {name:"Королева лучниць",     emoji:"🏹", img:"https://royaleapi.github.io/cr-api-assets/cards-150/archer-queen.png"},
-  {name:"Королівські кабани",   emoji:"🐗", img:"https://royaleapi.github.io/cr-api-assets/cards-150/royal-hogs.png"},
-  {name:"Королівський гігант",  emoji:"👑", img:"https://royaleapi.github.io/cr-api-assets/cards-150/royal-giant.png"},
-  {name:"Королівський привид",  emoji:"👻", img:"https://royaleapi.github.io/cr-api-assets/cards-150/royal-ghost.png"},
-  {name:"Король скелетів",      emoji:"💀", img:"https://royaleapi.github.io/cr-api-assets/cards-150/skeleton-king.png"},
-  {name:"Льодовий голем",       emoji:"🧊", img:"https://royaleapi.github.io/cr-api-assets/cards-150/ice-golem.png"},
-  {name:"Льодовий дух",         emoji:"❄️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/ice-spirit.png"},
-  {name:"Льодовий чарівник",    emoji:"🧊", img:"https://royaleapi.github.io/cr-api-assets/cards-150/ice-wizard.png"},
-  {name:"Кажани",               emoji:"🦇", img:"https://royaleapi.github.io/cr-api-assets/cards-150/bats.png"},
-  {name:"Лучниці",              emoji:"🏹", img:"https://royaleapi.github.io/cr-api-assets/cards-150/archers.png"},
-  {name:"Магічний лучник",      emoji:"✨", img:"https://royaleapi.github.io/cr-api-assets/cards-150/magic-archer.png"},
-  {name:"Маленький Принц",      emoji:"🤴", img:"https://royaleapi.github.io/cr-api-assets/cards-150/little-prince.png"},
-  {name:"Мегамініон",           emoji:"😈", img:"https://royaleapi.github.io/cr-api-assets/cards-150/mega-minion.png"},
-  {name:"Мегалицар",            emoji:"⚔️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/mega-knight.png"},
-  {name:"Спаркі",               emoji:"⚡", img:"https://royaleapi.github.io/cr-api-assets/cards-150/sparky.png"},
-  {name:"Міні-П.Е.К.К.А.",      emoji:"🤖", img:"https://royaleapi.github.io/cr-api-assets/cards-150/mini-pekka.png"},
-  {name:"Міньони",              emoji:"😈", img:"https://royaleapi.github.io/cr-api-assets/cards-150/minions.png"},
-  {name:"Монах",                emoji:"🥋", img:"https://royaleapi.github.io/cr-api-assets/cards-150/monk.png"},
-  {name:"Мушкетер",             emoji:"🔫", img:"https://royaleapi.github.io/cr-api-assets/cards-150/musketeer.png"},
-  {name:"Нічна відьма",         emoji:"🌙", img:"https://royaleapi.github.io/cr-api-assets/cards-150/night-witch.png"},
-  {name:"Вогняний дух",         emoji:"🔥", img:"https://royaleapi.github.io/cr-api-assets/cards-150/fire-spirit.png"},
-  {name:"Орда міньонів",        emoji:"😈", img:"https://royaleapi.github.io/cr-api-assets/cards-150/minion-horde.png"},
-  {name:"Мисливець",            emoji:"🎯", img:"https://royaleapi.github.io/cr-api-assets/cards-150/hunter.png"},
-  {name:"П.Е.К.К.А.",           emoji:"🤖", img:"https://royaleapi.github.io/cr-api-assets/cards-150/pekka.png"},
-  {name:"Кат",                  emoji:"⚔️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/executioner.png"},
-  {name:"Полум'яний дракон",    emoji:"🔥", img:"https://royaleapi.github.io/cr-api-assets/cards-150/inferno-dragon.png"},
-  {name:"Гарматна повозка",     emoji:"💥", img:"https://royaleapi.github.io/cr-api-assets/cards-150/cannon-cart.png"},
-  {name:"Шахтар",               emoji:"⛏️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/miner.png"},
-  {name:"Принц",                emoji:"🤴", img:"https://royaleapi.github.io/cr-api-assets/cards-150/prince.png"},
-  {name:"Принцеса",             emoji:"👸", img:"https://royaleapi.github.io/cr-api-assets/cards-150/princess.png"},
-  {name:"Розбійники",           emoji:"🗡️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/rascals.png"},
-  {name:"Рибалка",              emoji:"🎣", img:"https://royaleapi.github.io/cr-api-assets/cards-150/fisherman.png"},
-  {name:"Лицар",                emoji:"⚔️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/knight.png"},
-  {name:"Скелети",              emoji:"💀", img:"https://royaleapi.github.io/cr-api-assets/cards-150/skeletons.png"},
-  {name:"Стінобої",             emoji:"🪨", img:"https://royaleapi.github.io/cr-api-assets/cards-150/wall-breakers.png"},
-  {name:"Темний принц",         emoji:"🖤", img:"https://royaleapi.github.io/cr-api-assets/cards-150/dark-prince.png"},
-  {name:"Три мушкетери",        emoji:"🔫", img:"https://royaleapi.github.io/cr-api-assets/cards-150/three-musketeers.png"},
-  {name:"Фенікс",               emoji:"🦅", img:"https://royaleapi.github.io/cr-api-assets/cards-150/phoenix.png"},
-  {name:"Цілителька-воїн",      emoji:"💚", img:"https://royaleapi.github.io/cr-api-assets/cards-150/battle-healer.png"},
-  {name:"Куля",                 emoji:"💣", img:"https://royaleapi.github.io/cr-api-assets/cards-150/balloon.png"},
-  {name:"Електричний дух",      emoji:"⚡", img:"https://royaleapi.github.io/cr-api-assets/cards-150/electro-spirit.png"},
-  {name:"Електрогігант",        emoji:"⚡", img:"https://royaleapi.github.io/cr-api-assets/cards-150/electro-giant.png"},
-  {name:"Електродракон",        emoji:"🐲", img:"https://royaleapi.github.io/cr-api-assets/cards-150/electro-dragon.png"},
-  {name:"Еліксирний голем",     emoji:"🧪", img:"https://royaleapi.github.io/cr-api-assets/cards-150/elixir-golem.png"},
-  {name:"Елітні варвари",       emoji:"🪓", img:"https://royaleapi.github.io/cr-api-assets/cards-150/elite-barbarians.png"},
-  {name:"Варта",                emoji:"🛡️", img:"https://royaleapi.github.io/cr-api-assets/cards-150/guards.png"},
+  {name:"Адська гончея",        emoji:"🐕", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/inferno-dragon.png"},
+  {name:"Армія скелетів",       emoji:"💀", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/skeleton-army.png"},
+  {name:"Банда гоблінів",       emoji:"👺", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/goblin-gang.png"},
+  {name:"Бандитка",             emoji:"🗡️", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/bandit.png"},
+  {name:"Берсеркша",            emoji:"⚔️", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/valkyrie.png"},
+  {name:"Бойовий таран",        emoji:"🪵", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/battle-ram.png"},
+  {name:"Варвари",              emoji:"🪓", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/barbarians.png"},
+  {name:"Відьма",               emoji:"🧙", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/witch.png"},
+  {name:"Вершник на кабані",    emoji:"🐗", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/hog-rider.png"},
+  {name:"Вершниця на барані",   emoji:"🐏", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/ram-rider.png"},
+  {name:"Вишибала",             emoji:"🏏", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/bowler.png"},
+  {name:"Гігант",               emoji:"🗿", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/giant.png"},
+  {name:"Гігантський скелет",   emoji:"☠️", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/giant-skeleton.png"},
+  {name:"Гоблін з дротиками",   emoji:"🎯", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/dart-goblin.png"},
+  {name:"Гоблін-гігант",        emoji:"👹", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/goblin-giant.png"},
+  {name:"Гобліни",              emoji:"👺", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/goblins.png"},
+  {name:"Гобліни-списники",     emoji:"🔱", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/spear-goblins.png"},
+  {name:"Голем",                emoji:"🪨", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/golem.png"},
+  {name:"Громовержець",         emoji:"⚡", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/electro-wizard.png"},
+  {name:"Дракончик",            emoji:"🐲", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/baby-dragon.png"},
+  {name:"Дровосек",             emoji:"🪚", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/lumberjack.png"},
+  {name:"Дух зцілення",         emoji:"💚", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/heal-spirit.png"},
+  {name:"Золотий лицар",        emoji:"🏅", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/golden-knight.png"},
+  {name:"Чарівник",             emoji:"🧙", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/wizard.png"},
+  {name:"Королева лучниць",     emoji:"🏹", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/archer-queen.png"},
+  {name:"Королівські кабани",   emoji:"🐗", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/royal-hogs.png"},
+  {name:"Королівський гігант",  emoji:"👑", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/royal-giant.png"},
+  {name:"Королівський привид",  emoji:"👻", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/royal-ghost.png"},
+  {name:"Король скелетів",      emoji:"💀", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/skeleton-king.png"},
+  {name:"Льодовий голем",       emoji:"🧊", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/ice-golem.png"},
+  {name:"Льодовий дух",         emoji:"❄️", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/ice-spirit.png"},
+  {name:"Льодовий чарівник",    emoji:"🧊", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/ice-wizard.png"},
+  {name:"Кажани",               emoji:"🦇", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/bats.png"},
+  {name:"Лучниці",              emoji:"🏹", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/archers.png"},
+  {name:"Магічний лучник",      emoji:"✨", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/magic-archer.png"},
+  {name:"Маленький Принц",      emoji:"🤴", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/little-prince.png"},
+  {name:"Мегамініон",           emoji:"😈", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/mega-minion.png"},
+  {name:"Мегалицар",            emoji:"⚔️", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/mega-knight.png"},
+  {name:"Спаркі",               emoji:"⚡", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/sparky.png"},
+  {name:"Міні-П.Е.К.К.А.",      emoji:"🤖", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/mini-pekka.png"},
+  {name:"Міньони",              emoji:"😈", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/minions.png"},
+  {name:"Монах",                emoji:"🥋", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/monk.png"},
+  {name:"Мушкетер",             emoji:"🔫", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/musketeer.png"},
+  {name:"Нічна відьма",         emoji:"🌙", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/night-witch.png"},
+  {name:"Вогняний дух",         emoji:"🔥", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/fire-spirit.png"},
+  {name:"Орда міньонів",        emoji:"😈", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/minion-horde.png"},
+  {name:"Мисливець",            emoji:"🎯", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/hunter.png"},
+  {name:"П.Е.К.К.А.",           emoji:"🤖", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/pekka.png"},
+  {name:"Кат",                  emoji:"⚔️", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/executioner.png"},
+  {name:"Полум'яний дракон",    emoji:"🔥", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/inferno-dragon.png"},
+  {name:"Гарматна повозка",     emoji:"💥", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/cannon-cart.png"},
+  {name:"Шахтар",               emoji:"⛏️", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/miner.png"},
+  {name:"Принц",                emoji:"🤴", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/prince.png"},
+  {name:"Принцеса",             emoji:"👸", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/princess.png"},
+  {name:"Розбійники",           emoji:"🗡️", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/rascals.png"},
+  {name:"Рибалка",              emoji:"🎣", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/fisherman.png"},
+  {name:"Лицар",                emoji:"⚔️", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/knight.png"},
+  {name:"Скелети",              emoji:"💀", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/skeletons.png"},
+  {name:"Стінобої",             emoji:"🪨", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/wall-breakers.png"},
+  {name:"Темний принц",         emoji:"🖤", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/dark-prince.png"},
+  {name:"Три мушкетери",        emoji:"🔫", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/three-musketeers.png"},
+  {name:"Фенікс",               emoji:"🦅", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/phoenix.png"},
+  {name:"Цілителька-воїн",      emoji:"💚", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/battle-healer.png"},
+  {name:"Куля",                 emoji:"💣", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/balloon.png"},
+  {name:"Електричний дух",      emoji:"⚡", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/electro-spirit.png"},
+  {name:"Електрогігант",        emoji:"⚡", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/electro-giant.png"},
+  {name:"Електродракон",        emoji:"🐲", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/electro-dragon.png"},
+  {name:"Еліксирний голем",     emoji:"🧪", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/elixir-golem.png"},
+  {name:"Елітні варвари",       emoji:"🪓", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/elite-barbarians.png"},
+  {name:"Варта",                emoji:"🛡️", img:"https://cdn.jsdelivr.net/gh/royaleapi/cr-api-assets@master/cards-150/guards.png"},
 ];
 
 const BS_LOCATIONS = [
@@ -922,103 +933,84 @@ function renderCard(idx) {
   cover.style.transition = 'none';
   cover.style.transform = 'translateY(0)';
   document.getElementById('btn-next').classList.remove('on');
+  document.getElementById('btn-replay').classList.remove('on');
   renderRoleCard(idx);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ФІЗИЧНИЙ ДВИЖОК — rAF, гравітація, опір повітря, відскоки
+// ФІЗИКА КАРТКИ
 // ═══════════════════════════════════════════════════════════════════════════
 //
-// Модель:  a = gravity + drag * vy²  (drag гальмує в обох напрямках)
+//  Drag: карта слідує за пальцем 1:1.
+//        Рух вниз — з легким опором (×0.35), щоб не "провалювалась".
 //
-// Константи підібрані так, що:
-//   • легкий флік (~400 px/с) → апекс ~180px над картою, 1.4с польоту
-//   • сильний кидок (~1800 px/с) → апекс ~700px, 2.2с польоту
-//   • 2 відскоки з коефіцієнтом 0.38 (перший ~38%, другий ~15% висоти)
-//   • загальна «посадка» ≈ 2–3с — не надто швидко, не нудно
+//  Відпустили:
+//    • Підняли достатньо (або флік) → reveal + spring повернення на місце
+//      з ефектом overshooting (злегка пролітає повз 0 і повертається)
+//    • Не дотягнули → spring повернення на місце (та ж пружина, без reveal)
+//
+//  Spring-модель: критично-демпфована пружина (overdamped).
+//    x'' = -stiffness*(x - target) - damping*x'
+//    Дає плавне природнє повернення без механічних відскоків.
 
 const PHYS = {
-  gravity:    1600,   // px/с² — прискорення донизу
-  drag:       0.0012, // коефіцієнт аеродинамічного опору (відносний)
-  vLaunchMin: -900,   // мінімальний кидок (якщо флік занадто слабкий)
-  vLaunchMax: -2200,  // обрізка (щоб не злітала за 1 кадр)
-  bounceDamp: 0.38,   // коефіцієнт відновлення при відскоку
-  bounceMin:  120,    // мінімальна швидкість для наступного відскоку
-  maxBounces: 2,      // кількість відскоків
+  // Critically-damped spring: ζ = d / (2*√k) = 1.0 → жодного overshoot
+  // k=320, d=2*√320≈35.8  →  критичне демпфування
+  stiffness : 320,
+  damping   : 36,
+  // Для reveal — злегка underdamped (ζ≈0.85), один м'який overshooting ~4px
+  stiffnessReveal : 260,
+  dampingReveal   : 26,
+  threshold : 55,
+  flickVel  : -400,
 };
 
-let physRAF  = null;  // handle поточного rAF
-let physRev  = false; // чи вже летить (окрема змінна, щоб не плутати з `revealed`)
+let physRAF = null;
 
 function cancelPhysics() {
   if (physRAF) { cancelAnimationFrame(physRAF); physRAF = null; }
-  physRev = false;
 }
 
-// Запуск фізичної симуляції.
-// startY    — поточне translateY покриву (може бути ≤0 якщо вже трохи потягнули)
-// initialVy — швидкість з пальця (px/с, від'ємна = вгору)
-function physicsLaunch(startY, initialVy) {
-  if (revealed) return;
-  revealed = true;
-  physRev  = true;
-  SFX.reveal();
-
+// Spring simulation з semi-implicit Euler + під-кроками (4 sub-steps/frame).
+// Semi-implicit: спочатку оновлюємо швидкість, потім позицію —
+// це дає числову стабільність і прибирає overshoot від великих dt.
+function springTo(startY, startVy, target, stiffness, damping, onDone) {
+  cancelPhysics();
   const cover = document.getElementById('cover');
   cover.style.transition = 'none';
 
   let y  = startY;
-  let vy = Math.max(PHYS.vLaunchMax, Math.min(initialVy, PHYS.vLaunchMin)); // clamp
+  let vy = startVy;
   let t  = performance.now();
-
-  let didPop     = false;
-  let bounces    = 0;
-  let prevY      = y;
-
-  // Апекс-тригер: як тільки картка вийшла за межі видимості (≥ висота картки вгору)
-  // викидаємо частинки та граємо звук — один раз.
-  const coverH     = cover.offsetHeight || 240;
-  const apexTrigY  = -(coverH * 0.6);   // 60% висоти картки вище початку
+  const SUB = 4; // під-кроків за кадр
 
   function step(now) {
-    const rawDt = (now - t) / 1000;
-    // Обрізаємо dt: якщо вкладка прихована/лаг — не даємо великого стрибка
-    const dt = Math.min(rawDt, 0.032);
+    const rawDt = Math.min((now - t) / 1000, 0.032);
     t = now;
+    const dt = rawDt / SUB;
 
-    // Drag: опір пропорційний vy² (завжди проти напрямку руху)
-    const dragAcc = PHYS.drag * vy * Math.abs(vy);
-    vy += (PHYS.gravity - dragAcc) * dt;
-    y  += vy * dt;
-
-    // ── Частинки на апексі ──
-    if (!didPop && y <= apexTrigY) {
-      didPop = true;
-      popParticles();
-      SFX.peace();
+    for (let i = 0; i < SUB; i++) {
+      // Semi-implicit Euler: v → потім x
+      vy += (-stiffness * (y - target) - damping * vy) * dt;
+      y  += vy * dt;
     }
 
-    // ── Контакт з підлогою (y ≥ 0) ──
-    if (y >= 0) {
-      y = 0;
-      if (bounces < PHYS.maxBounces && Math.abs(vy) > PHYS.bounceMin) {
-        // Відскок: інвертуємо швидкість із затуханням
-        vy = -Math.abs(vy) * PHYS.bounceDamp;
-        bounces++;
-        // Маленький «гупіт» при відскоку
-        try { SFX.click(); } catch(e) {}
-      } else {
-        // Зупинка — картка осіла
-        cover.style.transform = 'translate3d(0,0,0)';
-        physRAF = null;
-        physRev = false;
-        setTimeout(() => document.getElementById('btn-next').classList.add('on'), 100);
-        return;
-      }
+    // Клампуємо: карта не може опускатись нижче початкової позиції (y > 0)
+    // якщо старт був вище (startY < 0). Це прибирає "провал під землю".
+    if (startY <= 0 && y > 0) {
+      y  = 0;
+      vy = 0;
     }
 
     cover.style.transform = `translate3d(0,${y}px,0)`;
-    prevY  = y;
+
+    if (Math.abs(y - target) < 0.3 && Math.abs(vy) < 1.5) {
+      cover.style.transform = `translate3d(0,${target}px,0)`;
+      physRAF = null;
+      onDone && onDone();
+      return;
+    }
+
     physRAF = requestAnimationFrame(step);
   }
 
@@ -1026,97 +1018,121 @@ function physicsLaunch(startY, initialVy) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// СВАЙП — відстеження швидкості + передача імпульсу у фізику
+// СВАЙП — пряме слідування за пальцем + spring при відпусканні
 // ═══════════════════════════════════════════════════════════════════════════
-//
-// Швидкість пальця вимірюємо ковзним середнім по останніх 3 семплах
-// (ringbuffer). Це дає стабільніший результат ніж просто «перший-останній».
 
 (function () {
-  const wrap = document.getElementById('card-wrap');
+  const wrap  = document.getElementById('card-wrap');
+  const cover = document.getElementById('cover');
 
-  // Стан дотику
-  let drag   = false;
-  let sy     = 0, sx = 0;   // стартова позиція
-  let delta  = 0;            // поточне зміщення (≤0)
+  let drag  = false;
+  let sy = 0, sx = 0;
+  let curDy = 0;    // поточне зміщення картки (px), відстежуємо для end()
+  let coverH = 240;
 
-  // Ring-buffer для швидкості: зберігаємо останні N семплів {y, t}
-  const VEL_SAMPLES = 4;
-  const velBuf = [];
-  let velIdx   = 0;
+  // Ring-buffer швидкості пальця (6 семплів ~100ms)
+  const VB   = 6;
+  const vBuf = Array.from({length: VB}, () => ({y:0, t:0}));
+  let   vIdx = 0;
 
-  function resetVel(y, t) {
-    velBuf.length = 0;
-    for (let i = 0; i < VEL_SAMPLES; i++) velBuf.push({y, t});
-    velIdx = 0;
+  function resetVel(y, t) { for (let i=0;i<VB;i++) vBuf[i]={y,t}; vIdx=0; }
+  function pushVel(y, t)  { vBuf[vIdx++ % VB] = {y, t}; }
+  function getVy() {
+    const n = vBuf[(vIdx-1+VB)%VB];
+    const o = vBuf[vIdx%VB];
+    const dt = n.t - o.t;
+    return dt < 2 ? 0 : (n.y - o.y) / dt * 1000; // px/с (+вниз, -вгору)
   }
-  function pushVel(y, t) {
-    velBuf[velIdx % VEL_SAMPLES] = {y, t};
-    velIdx++;
-  }
-  // Швидкість між найстарішим і найновішим семплом у буфері
-  function calcVy() {
-    if (velBuf.length < 2) return 0;
-    const newest = velBuf[(velIdx - 1 + VEL_SAMPLES) % VEL_SAMPLES];
-    const oldest = velBuf[velIdx % VEL_SAMPLES];        // найстаріший (перезаписаний наступним)
-    const dt = newest.t - oldest.t;
-    if (dt < 1) return 0;
-    return (newest.y - oldest.y) / dt * 1000; // px/с
-  }
-
-  const THRESHOLD    = 50;    // мін. відстань для зарахування свайпу (px)
-  const VEL_TRIGGER  = -320;  // мін. швидкість флікання (px/с), щоб не вимагати відстані
 
   function start(y, x) {
     if (revealed) return;
     cancelPhysics();
-    sy = y; sx = x; drag = true; delta = 0;
+    sy = y; sx = x; drag = true; curDy = 0; maxUpDy = 0;
+    coverH = cover.offsetHeight || 240;
     resetVel(y, performance.now());
-    document.getElementById('cover').style.transition = 'none';
+    cover.style.transition = 'none';
   }
+
+  // Відстежуємо максимальний підйом за весь gesture (навіть якщо потім опустили)
+  let maxUpDy = 0;
 
   function move(y, x) {
     if (!drag || revealed) return;
-    const dy = y - sy, dx = x - sx;
-    // Якщо рух переважно горизонтальний — ігноруємо
-    if (Math.abs(dx) > Math.abs(dy) + 10) { drag = false; return; }
-    delta = Math.min(0, dy);
-    document.getElementById('cover').style.transform = `translate3d(0,${delta}px,0)`;
+    const dy = y - sy;
+    const dx = x - sx;
+    if (Math.abs(dx) > Math.abs(dy) + 12) { drag = false; return; }
+
+    if (dy < 0) {
+      curDy = dy;
+      if (dy < maxUpDy) maxUpDy = dy;
+    } else {
+      curDy = dy * 0.35;
+    }
+
+    cover.style.transform = `translate3d(0,${curDy}px,0)`;
     pushVel(y, performance.now());
+  }
+
+  function doReveal(snapY, snapVy) {
+    if (revealed) return;
+    revealed = true;
+    SFX.reveal();
+    popParticles();
+    SFX.peace();
+    springTo(snapY, snapVy, 0,
+      PHYS.stiffnessReveal,
+      PHYS.dampingReveal,
+      () => {
+        document.getElementById('btn-next').classList.add('on');
+        document.getElementById('btn-replay').classList.add('on');
+      }
+    );
   }
 
   function end() {
     if (!drag) return;
     drag = false;
-    pushVel(/* фіналізуємо */ NaN, performance.now()); // NaN щоб не зламати, але буфер вже заповнений
-    const fingerVy    = calcVy();
-    const passedDist  = Math.abs(delta) >= THRESHOLD;
-    const fastFlick   = fingerVy < VEL_TRIGGER;
 
-    if (passedDist || fastFlick) {
-      // Передаємо реальну швидкість пальця → фізика доробить решту
-      physicsLaunch(delta, fingerVy);
+    const vy        = getVy();
+    // Зараховуємо якщо підняв достатньо В БУДЬ-ЯКИЙ МОМЕНТ жесту,
+    // або якщо зробив швидкий флік вгору
+    const wentUp    = maxUpDy <= -PHYS.threshold;
+    const fastFlick = vy      <   PHYS.flickVel;
+    // При reveal стартуємо пружину з поточної позиції пальця (де він зараз)
+    // а не з найвищої точки — щоб анімація була природньою
+    const snapY     = curDy;
+    const snapVy    = vy;
+
+    if (wentUp || fastFlick) {
+      doReveal(snapY, snapVy);
     } else {
-      // Не докинув — пружньо повертаємо назад
-      const c = document.getElementById('cover');
-      c.style.transition = 'transform .4s cubic-bezier(.34,1.4,.64,1)'; // невелике пружньо-перевищення
-      c.style.transform  = 'translate3d(0,0,0)';
+      // ── ПОВЕРНЕННЯ ──
+      springTo(snapY, snapVy, 0,
+        PHYS.stiffness,
+        PHYS.damping,
+        null
+      );
     }
-    delta = 0;
+
+    curDy = 0;
   }
 
-  // ── listeners (passive там де можливо) ──
-  wrap.addEventListener('touchstart',  e => { const t = e.touches[0]; start(t.clientY, t.clientX); }, { passive: true });
-  wrap.addEventListener('touchmove',   e => { const t = e.touches[0]; move(t.clientY, t.clientX);  }, { passive: true });
-  wrap.addEventListener('touchend',    end, { passive: true });
-  wrap.addEventListener('touchcancel', end, { passive: true });
+  wrap.addEventListener('touchstart',  e => { const t=e.touches[0]; start(t.clientY,t.clientX); }, {passive:true});
+  wrap.addEventListener('touchmove',   e => { const t=e.touches[0]; move(t.clientY,t.clientX);  }, {passive:true});
+  wrap.addEventListener('touchend',    end, {passive:true});
+  wrap.addEventListener('touchcancel', end, {passive:true});
 
-  // Mouse (десктоп / devtools)
-  let mouseDragging = false;
-  wrap.addEventListener('mousedown', e => { mouseDragging = true; start(e.clientY, e.clientX); });
-  window.addEventListener('mousemove', e => { if (mouseDragging) move(e.clientY, e.clientX); });
-  window.addEventListener('mouseup',   () => { if (mouseDragging) { mouseDragging = false; end(); } });
+  let md = false;
+  wrap.addEventListener('mousedown',   e => { md=true; start(e.clientY,e.clientX); });
+  window.addEventListener('mousemove', e => { if(md) move(e.clientY,e.clientX); });
+  window.addEventListener('mouseup',   ()=> { if(md) { md=false; end(); } });
 })();
+
+
+
+
+
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // РЕЗУЛЬТАТИ
@@ -1200,6 +1216,20 @@ document.getElementById('btn-start').onclick = () => {
   renderCard(0);
 };
 document.getElementById('btn-cancel').onclick    = () => { SFX.click(); showScreen('settings'); };
+
+document.getElementById('btn-replay').onclick = () => {
+  SFX.click();
+  // Ховаємо кнопки
+  document.getElementById('btn-next').classList.remove('on');
+  document.getElementById('btn-replay').classList.remove('on');
+  // Скидаємо стан — дозволяємо знову свайпнути
+  revealed = false;
+  cancelPhysics();
+  // Плавно повертаємо cover на місце
+  const cover = document.getElementById('cover');
+  cover.style.transition = 'transform 0.45s cubic-bezier(.34,1.4,.64,1)';
+  cover.style.transform  = 'translate3d(0,0,0)';
+};
 document.getElementById('btn-restart').onclick   = () => { SFX.click(); showScreen('settings'); };
 document.getElementById('btn-show-results').onclick = () => { SFX.click(); showResults(); };
 document.getElementById('btn-results-new').onclick  = () => { SFX.click(); showScreen('settings'); };
